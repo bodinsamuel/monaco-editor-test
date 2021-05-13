@@ -19,7 +19,7 @@ export function initJS(monaco: typeof MonacoEditor) {
     allowJs: true,
     checkJs: true,
     strict: false,
-    noImplicitAny: false,
+    noImplicitAny: true,
     noImplicitThis: false,
     noErrorTruncation: true,
     lib: ['es2020'],

@@ -7,14 +7,45 @@ import { fileToModel } from './helpers/fileToModel';
 import { ListFiles } from './ListFiles';
 
 const sourceCode =
-`import cheerio from 'cheerio';
+`/// <reference types="node" />
+import { CheerioAPI, load} from 'cheerio';
+import { Config } from './tmp/config';
 import parseJson from 'parse-json';
 
 [1].map((value) => {
   return value;
 });
+parseJson(true);
 
-const t: cheerio.Cheerio = parseJson(true);`
+// This work
+const $a = load('test', { test: 'test' });
+$a('.title').map((i, el) => {
+  return $a(el);
+});
+const test: CheerioAPI = {};
+
+new Crawler({
+  actions: [{
+    indexName: true,
+    // The $ is any :(
+    recordExtractor: ({ $ }) => {
+      return [{
+        title: $('.title').map((i, el) => {
+          return $(el);
+        }),
+      }]
+    }
+  }]
+});
+
+const config: Config = {
+  appId: '',
+  apiKey: '',
+  exclusionPatterns: [],
+  rateLimit: 8,
+  actions: [{
+  }]
+};`
 
 function App() {
   const [uri, setUri] = useState<MonacoEditor.Uri>();
