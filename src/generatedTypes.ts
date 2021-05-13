@@ -21,7 +21,7 @@ export function loadTypes(monaco: typeof MonacoEditor): void {
   for (const file of files) {
     loaded.push(file.path);
 
-    const path = `node_modules/${file.path}`;
+    const path = `/node_modules/${file.path}`;
     const isJson = file.path.endsWith('.json');
     if (isJson) {
       file.source = JSON.stringify(file.source, null, '  ');
