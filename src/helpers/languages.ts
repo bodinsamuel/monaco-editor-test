@@ -3,7 +3,7 @@ import type MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
 export function initJS(monaco: typeof MonacoEditor) {
   // Languages diagnostics
-monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
     noSemanticValidation: false,
     noSyntaxValidation: false,
     noSuggestionDiagnostics: true,
@@ -12,7 +12,8 @@ monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
     noSemanticValidation: false,
     noSyntaxValidation: false,
   });
-  monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+
+  const compilerOptions: MonacoEditor.languages.typescript.CompilerOptions = {
     target: monaco.languages.typescript.ScriptTarget.ES2016,
     allowNonTsExtensions: true,
     allowJs: true,
@@ -21,14 +22,23 @@ monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
     noImplicitAny: false,
     noImplicitThis: false,
     noErrorTruncation: true,
+    lib: ['es2020'],
+
+    // --- important for module to work
     noEmit: true,
-    moduleResolution:
-    monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-    module: monaco.languages.typescript.ModuleKind.System,
-    lib: ['es2020'], // update `libs.ts` when changing this,
-    esModuleInterop: false,
-    typeRoots: ['node_modules/@types'],
-  });
+    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    module: monaco.languages.typescript.ModuleKind.ES2015,
+    typeRoots: [ "node_modules/@types" ],
+    // --- end
+
+    // baseUrl: 'file:///',
+    // esModuleInterop: true,
+    allowSyntheticDefaultImports: true,
+    // downlevelIteration: true,
+  };
+  monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
+  monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
+
   monaco.languages.html.htmlDefaults.setOptions({
     format: {
       contentUnformatted: 'pre, script, style',

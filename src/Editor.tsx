@@ -1,27 +1,19 @@
-import MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import { StaticServices } from 'monaco-editor/esm/vs/editor/standalone/browser/standaloneServices';
 import React, { useEffect, useRef, useCallback } from 'react';
 import { useMount, useUnmount} from 'react-use';
 
-
 import { DEFAULT_OPTIONS, DEFAULT_READONLY_OPTIONS } from './helpers/constants';
-import { fileToModel } from './helpers/fileToModel';
 import { loadTypes } from './generatedTypes';
 import { initJS } from './helpers/languages';
-import { Languages } from './types';
-
 
 const codeEditorService = StaticServices.codeEditorService.get();
 
 // Store editor states such as cursor position, selection and scroll position for each model
-const editorStates = new Map();
+const editorStates = new Map<MonacoEditor.Uri, MonacoEditor.editor.ICodeEditorViewState | null>();
 
 interface Props {
-  file: {
-    path: string;
-    sourceCode: string;
-    language: Languages;
-  }
+  uri: MonacoEditor.Uri,
   theme?: 'vs-dark' | 'vs-light';
   override?: MonacoEditor.editor.IEditorOptions;
 
@@ -37,7 +29,7 @@ interface Props {
 }
 
 export const CodeEditor: React.FC<Props> = ({
-  file,
+  uri,
   theme = 'vs-dark',
   override,
   onChange,
@@ -45,19 +37,19 @@ export const CodeEditor: React.FC<Props> = ({
 }) => {
   const refNode = useRef<HTMLDivElement>(null);
   const refEditor = useRef<MonacoEditor.editor.IStandaloneCodeEditor>();
-  const prevPath = useRef<string>();
+  const prevPath = useRef<MonacoEditor.Uri>();
   const refSubscription = useRef<MonacoEditor.IDisposable>();
 
   /**
    * Load a model into MonacoEditor.
    */
-  const openFile = useCallback((): void => {;
-    const model = fileToModel(MonacoEditor, file.path, file.sourceCode, file.language);
+  const openFile = useCallback((): void => {
+    const model = MonacoEditor.editor.getModel(uri);
 
     refEditor.current!.setModel(model);
 
     // Restore the editor state for the file
-    const editorState = editorStates.get(file.path);
+    const editorState = editorStates.get(uri);
 
     if (editorState) {
       refEditor.current!.restoreViewState(editorState);
@@ -83,14 +75,14 @@ export const CodeEditor: React.FC<Props> = ({
           onChange(value, refEditor.current!, MonacoEditor);
         }
       });
-  }, [file, onChange, onOpenFile]);
+  }, [uri, onChange, onOpenFile]);
 
   useMount(() => {
     if (!refNode.current) {
       return;
     }
 
-    prevPath.current = file.path;
+    prevPath.current = uri;
 
     const base = override?.readOnly
       ? DEFAULT_READONLY_OPTIONS
@@ -122,7 +114,7 @@ export const CodeEditor: React.FC<Props> = ({
 
     initJS(MonacoEditor);
 
-    loadTypes();
+    loadTypes(MonacoEditor);
 
     openFile();
   });
@@ -138,28 +130,28 @@ export const CodeEditor: React.FC<Props> = ({
 
   // componentDidUpdate for file change
   useEffect(() => {
-    if (!prevPath.current || prevPath.current !== file.path) {
+    if (!prevPath.current || prevPath.current.toString() !== uri.toString()) {
       // Only change state if the previous path is different, this is useful to only retrigger monaco model creation
-      editorStates.set(prevPath.current, refEditor.current!.saveViewState());
+      editorStates.set(prevPath.current!, refEditor.current!.saveViewState());
       openFile();
-      prevPath.current = file.path;
+      prevPath.current = uri;
     }
 
-    if (refEditor.current!.getModel()!.getValue() !== file.sourceCode) {
-      const model = refEditor.current!.getModel()!;
-      // Happen when file is modified from outside the editor (from api, prettier, stores, etc...)
-      model.pushEditOperations(
-        [],
-        [
-          {
-            range: model.getFullModelRange(),
-            text: file.sourceCode,
-          },
-        ],
-        () => null
-      );
-    }
-  }, [file, openFile]);
+    // if (refEditor.current!.getModel()!.getValue() !== file.sourceCode) {
+    //   // Happen when file is modified from outside the editor (from api, prettier, stores, etc...)
+    //   const model = refEditor.current!.getModel()!;
+    //   model.pushEditOperations(
+    //     [],
+    //     [
+    //       {
+    //         range: model.getFullModelRange(),
+    //         text: file.sourceCode,
+    //       },
+    //     ],
+    //     () => null
+    //   );
+    // }
+  }, [uri, openFile]);
 
   // Theme change
   useEffect(() => {
@@ -173,5 +165,5 @@ export const CodeEditor: React.FC<Props> = ({
     }
   }, [override]);
 
-  return <div ref={refNode} />;
+  return <div ref={refNode} style={{height: "50vh", width: "80vw"}} />;
 };

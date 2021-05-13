@@ -6,11 +6,10 @@ import { Languages } from '../types';
  */
 export function fileToModel(
   monaco: typeof MonacoEditor,
-  path: string,
+  uri: MonacoEditor.Uri,
   file: string,
   language: Languages
 ): MonacoEditor.editor.ITextModel {
-  const uri = new monaco.Uri().with({ path });
   let model = monaco.editor.getModel(uri);
 
   if (model) {
@@ -29,6 +28,7 @@ export function fileToModel(
     );
     return model;
   }
+
   model = monaco.editor.createModel(
     file,
     language,

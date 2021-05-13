@@ -10,6 +10,7 @@ module.exports = {
   ],
 
   rules: {
+    'no-restricted-syntax': ['off'],
     'import/extensions': ['off'],
     'react/prop-types': ['off'],
     "import/prefer-default-export": ['off'],
