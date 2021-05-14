@@ -1,18 +1,6 @@
 import type MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
-
-export function initJS(monaco: typeof MonacoEditor) {
-  // Languages diagnostics
-  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-    noSemanticValidation: false,
-    noSyntaxValidation: false,
-    noSuggestionDiagnostics: true,
-  });
-  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    noSemanticValidation: false,
-    noSyntaxValidation: false,
-  });
-
+export function getCompilterOptions(monaco: typeof MonacoEditor): MonacoEditor.languages.typescript.CompilerOptions {
   const compilerOptions: MonacoEditor.languages.typescript.CompilerOptions = {
     target: monaco.languages.typescript.ScriptTarget.ES2016,
     allowNonTsExtensions: true,
@@ -36,6 +24,22 @@ export function initJS(monaco: typeof MonacoEditor) {
     allowSyntheticDefaultImports: true,
     // downlevelIteration: true,
   };
+  return compilerOptions;
+}
+
+export async function setupLanguages(monaco: typeof MonacoEditor) {
+  // Languages diagnostics
+  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: false,
+    noSyntaxValidation: false,
+    noSuggestionDiagnostics: true,
+  });
+  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: false,
+    noSyntaxValidation: false,
+  });
+
+  const compilerOptions = getCompilterOptions(monaco);
   monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
 

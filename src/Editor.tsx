@@ -5,7 +5,9 @@ import { useMount, useUnmount} from 'react-use';
 
 import { DEFAULT_OPTIONS, DEFAULT_READONLY_OPTIONS } from './helpers/constants';
 import { loadTypes } from './generatedTypes';
-import { initJS } from './helpers/languages';
+import { setupLanguages } from './editor/languages';
+import { setupAutocompletion } from './editor/autocompletion';
+import { store } from './editor/store';
 
 const codeEditorService = StaticServices.codeEditorService.get();
 
@@ -39,6 +41,7 @@ export const CodeEditor: React.FC<Props> = ({
   const refEditor = useRef<MonacoEditor.editor.IStandaloneCodeEditor>();
   const prevPath = useRef<MonacoEditor.Uri>();
   const refSubscription = useRef<MonacoEditor.IDisposable>();
+  const disposables = useRef<(() => void)[]>([]);
 
   /**
    * Load a model into MonacoEditor.
@@ -78,6 +81,8 @@ export const CodeEditor: React.FC<Props> = ({
   }, [uri, onChange, onOpenFile]);
 
   useMount(() => {
+    console.log('on mount a');
+
     if (!refNode.current) {
       return;
     }
@@ -112,20 +117,35 @@ export const CodeEditor: React.FC<Props> = ({
       }
     );
 
-    initJS(MonacoEditor);
+    setupLanguages(MonacoEditor);
 
     loadTypes(MonacoEditor);
+
+    disposables.current.push(
+      setupAutocompletion(MonacoEditor),
+    );
 
     openFile();
   });
 
   useUnmount(() => {
+    console.log('on unmount');
     if (refSubscription.current) {
       refSubscription.current.dispose();
     }
     if (refEditor.current) {
       refEditor.current.dispose();
     }
+
+    disposables.current.forEach((item) => {
+      item();
+    });
+
+    store.types.forEach((item) => item.dispose());
+    store.models.forEach((item) => item.dispose());
+    store.types.clear();
+    store.models.clear();
+    store.deps.clear();
   });
 
   // componentDidUpdate for file change
