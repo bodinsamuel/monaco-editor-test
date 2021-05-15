@@ -76,7 +76,7 @@ export const Files: React.FC<Props> = observer(({ files, path }) => {
   }, []);
 
   return (
-    <ul className="fileTree" style={{ marginLeft: `6px` }}>
+    <ul className="fileTree" style={{ marginLeft: `8px` }}>
       {list &&
         Array.from(list.entries()).map(([file, type]) => {
           if (type === FileType.DIRECTORY) {

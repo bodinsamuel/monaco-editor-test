@@ -103,6 +103,11 @@ export class FileSystem implements System {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   writeFile(path: string, content: string) {
+    const prev: string[] = [];
+    path.split('/').forEach((name) => {
+      prev.push(name);
+      this.createDirectory(prev.join('/'));
+    });
     this.#files.set(path, FileType.FILE);
     this.#content.set(path, content);
   }
