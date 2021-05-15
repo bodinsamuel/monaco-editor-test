@@ -20,7 +20,7 @@ code {
   width: 100vw;
   grid-template-columns: 200px 1fr;
   background-color: #1e1e1e;
-  color: #d4d4d4;
+  color: #bbb;
 }
 
 .grid-editor {
@@ -28,7 +28,8 @@ code {
 }
 .grid-files {
   border-right: 1px solid #383838;
-  background-color: #2c2c2c;
+  background-color: darken(#2c2c2c, 2.5);
+  overflow: scroll;
 }
 
 .fileTree {
@@ -41,10 +42,14 @@ code {
   align-items: center;
 
   &:hover {
-    background: lighten(#2c2c2c, 2.9);
+    background: lighten(#2c2c2c, 1.2);
   }
   &.selected {
     background: lighten(#2c2c2c, 4.9);
+    color: #ddd;
+    .fileRowIcon {
+      color: #aaa;
+    }
   }
   button {
     appearance: none;
@@ -62,6 +67,7 @@ code {
   }
   .fileRowIcon {
     padding: 0 6px 0 0;
+    color: #777;
   }
   .fileRowName {
     text-overflow: ellipsis;

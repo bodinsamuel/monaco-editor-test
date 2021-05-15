@@ -3,7 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { autorun } from 'mobx';
 import classnames from 'classnames';
-import { File as FileIcon, Folder as FolderIcon } from 'react-feather';
+import {
+  File as FileIcon,
+  ChevronRight as FolderIcon,
+  ChevronDown as FolderIconOpen,
+} from 'react-feather';
 import { basename } from 'path';
 import { FileType, FSMap } from '../fs';
 import { fs, store } from '../store';
@@ -13,16 +17,25 @@ interface Props {
   path: string;
 }
 
+const leftPad = 10;
+
 const File: React.FC<{
   selected: boolean;
   path: string;
 }> = ({ selected, path }) => {
+  const [depth] = useState(() => {
+    return path.split('/').length - 1;
+  });
   const [displayName] = useState<string>(() => {
     return basename(path);
   });
+
   return (
-    <li key={path}>
-      <div className={classnames('fileRow', selected && 'selected')}>
+    <li>
+      <div
+        className={classnames('fileRow', selected && 'selected')}
+        style={{ paddingLeft: `${depth * leftPad}px` }}
+      >
         <button
           type="button"
           onClick={() => {
@@ -40,6 +53,9 @@ const File: React.FC<{
 };
 
 const Folder: React.FC<{ path: string }> = ({ path }) => {
+  const [depth] = useState(() => {
+    return path.split('/').length - 1;
+  });
   const [open, setOpen] = useState<boolean>(false);
   const [displayName] = useState<string>(() => {
     return basename(path);
@@ -48,10 +64,13 @@ const Folder: React.FC<{ path: string }> = ({ path }) => {
   /* eslint-disable @typescript-eslint/no-use-before-define */
   return (
     <li>
-      <div className={classnames('fileRow')}>
+      <div
+        className={classnames('fileRow')}
+        style={{ paddingLeft: `${depth * leftPad}px` }}
+      >
         <button type="button" onClick={() => setOpen(!open)}>
           <div className="fileRowIcon">
-            <FolderIcon size={10} />
+            {open ? <FolderIconOpen size={10} /> : <FolderIcon size={10} />}
           </div>
           <div className="fileRowName">{displayName}</div>
         </button>
@@ -76,7 +95,7 @@ export const Files: React.FC<Props> = observer(({ files, path }) => {
   }, []);
 
   return (
-    <ul className="fileTree" style={{ marginLeft: `8px` }}>
+    <ul className="fileTree">
       {list &&
         Array.from(list.entries()).map(([file, type]) => {
           if (type === FileType.DIRECTORY) {
