@@ -10,7 +10,7 @@ import {
 import { loadTypes } from '../generatedTypes';
 import { setupLanguages } from '../editor/languages';
 import { setupAutocompletion } from '../editor/autocompletion';
-import { store } from '../editor/store';
+import { store } from '../store/index';
 
 const codeEditorService = StaticServices.codeEditorService.get();
 

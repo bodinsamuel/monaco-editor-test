@@ -2,7 +2,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-webpack-loader-syntax */
 import type MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import { store } from './editor/store';
+import { store, fs } from './store/index';
 import { fileToModel } from './helpers/fileToModel';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,6 +77,8 @@ export function loadTypes(monaco: typeof MonacoEditor): void {
         );
       store.types.set(file.path, disposable);
     }
+
+    fs.writeFile(file.path, file.source);
 
     store.models.set(
       file.path,

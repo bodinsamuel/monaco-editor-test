@@ -1,5 +1,5 @@
 import type MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import { store } from './store';
+import { store } from '../store/index';
 
 const regex = /(([\s|\n]from\s)|(\brequire\b\())["|']\.*/;
 const triggerCharacters = ["'", '"', '.', '/'];

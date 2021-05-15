@@ -1,12 +1,14 @@
+import { observer } from 'mobx-react-lite';
 import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useMount } from 'react-use';
 import { CodeEditor } from './components/Editor';
 import { Files } from './components/Files';
-import { store } from './editor/store';
+import { context } from './store';
 
-function App() {
+const App: React.FC = observer(() => {
+  const store = useContext(context);
   const [uri, setUri] = useState<MonacoEditor.Uri>();
 
   useMount(() => {
@@ -21,12 +23,12 @@ function App() {
           onPick={(val) => {
             setUri(val);
           }}
-          models={store.models}
+          files={store.files}
         />
       </div>
       <div className="grid-editor">{uri && <CodeEditor uri={uri} />}</div>
     </div>
   );
-}
+});
 
 export default App;

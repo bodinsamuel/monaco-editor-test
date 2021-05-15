@@ -3245,6 +3245,21 @@ cheerio@1.0.0-rc.9:
     parse5-htmlparser2-tree-adapter "^6.0.1"
     tslib "^2.2.0"
 
+"chokidar@>=3.0.0 <4.0.0", chokidar@^3.4.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.5.1.tgz#ee9ce7bbebd2b79f49f304799d5468e31e14e68a"
+  integrity sha512-9+s+Od+W0VJJzawDma/gvBNQqkTiqYTWLuZoyAsivsI4AaWTCzHG06/TMjsf1cYe9Cb97UCEhjz7HvnPk2p/tw==
+  dependencies:
+    anymatch "~3.1.1"
+    braces "~3.0.2"
+    glob-parent "~5.1.0"
+    is-binary-path "~2.1.0"
+    is-glob "~4.0.1"
+    normalize-path "~3.0.0"
+    readdirp "~3.5.0"
+  optionalDependencies:
+    fsevents "~2.3.1"
+
 chokidar@^2.1.8:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.8.tgz#804b3a7b6a99358c3c5c61e71d8728f041cff917"
@@ -3263,21 +3278,6 @@ chokidar@^2.1.8:
     upath "^1.1.1"
   optionalDependencies:
     fsevents "^1.2.7"
-
-chokidar@^3.4.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.5.1.tgz#ee9ce7bbebd2b79f49f304799d5468e31e14e68a"
-  integrity sha512-9+s+Od+W0VJJzawDma/gvBNQqkTiqYTWLuZoyAsivsI4AaWTCzHG06/TMjsf1cYe9Cb97UCEhjz7HvnPk2p/tw==
-  dependencies:
-    anymatch "~3.1.1"
-    braces "~3.0.2"
-    glob-parent "~5.1.0"
-    is-binary-path "~2.1.0"
-    is-glob "~4.0.1"
-    normalize-path "~3.0.0"
-    readdirp "~3.5.0"
-  optionalDependencies:
-    fsevents "~2.3.1"
 
 chownr@^1.1.1:
   version "1.1.4"
@@ -7507,6 +7507,16 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
+mobx-react-lite@3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-3.2.0.tgz#331d7365a6b053378dfe9c087315b4e41c5df69f"
+  integrity sha512-q5+UHIqYCOpBoFm/PElDuOhbcatvTllgRp3M1s+Hp5j0Z6XNgDbgqxawJ0ZAUEyKM8X1zs70PCuhAIzX1f4Q/g==
+
+mobx@6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-6.3.0.tgz#a8fb693c3047bdfcb1eaff9aa48e36a7eb084f96"
+  integrity sha512-Aa1+VXsg4WxqJMTQfWoYuJi5UD10VZhiobSmcs5kcmI3BIT0aVtn7DysvCeDADCzl7dnbX+0BTHUj/v7gLlZpQ==
+
 monaco-editor-webpack-plugin@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-3.1.0.tgz#972efc47a91b3bf3bd977885684a3180eb8f341b"
@@ -9873,6 +9883,13 @@ sass-loader@^10.0.5:
     neo-async "^2.6.2"
     schema-utils "^3.0.0"
     semver "^7.3.2"
+
+sass@1.32.13:
+  version "1.32.13"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.32.13.tgz#8d29c849e625a415bce71609c7cf95e15f74ed00"
+  integrity sha512-dEgI9nShraqP7cXQH+lEXVf73WOPCse0QlFzSD8k+1TcOxCMwVXfQlr0jtoluZysQOyJGnfr21dLvYKDJq8HkA==
+  dependencies:
+    chokidar ">=3.0.0 <4.0.0"
 
 sax@~1.2.4:
   version "1.2.4"

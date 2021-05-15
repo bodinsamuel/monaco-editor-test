@@ -29,3 +29,13 @@ code {
   border-right: 1px solid #383838;
   background-color: #2c2c2c;
 }
+
+.fileTree {
+  list-style: none;
+  padding: 0;
+  button {
+    appearance: none;
+    background: transparent;
+    color: inherit;
+  }
+}

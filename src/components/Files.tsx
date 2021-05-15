@@ -1,35 +1,37 @@
 import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import React, { useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { autorun } from 'mobx';
+import { FileType } from '../fs';
 
 interface Props {
   onPick: (uri: MonacoEditor.Uri) => void;
-  models: Map<string, MonacoEditor.editor.ITextModel>;
+  files: Map<string, FileType>;
 }
 
-export const Files: React.FC<Props> = ({ onPick, models }) => {
-  const [files, setFiles] = useState<string[]>([]);
+export const Files: React.FC<Props> = observer(({ onPick, files }) => {
+  const [list, setList] = useState<string[]>([]);
 
   useEffect(() => {
-    setFiles(
-      MonacoEditor.editor.getModels().map((model) => model.uri.toString())
-    );
-  }, [models]);
+    autorun(() => {
+      setList(Array.from(files.keys()));
+    });
+  }, []);
 
   return (
-    <ul>
-      {files.map((file) => (
+    <ul className="fileTree">
+      {list.map((file) => (
         <li key={file}>
-          {file}
           <button
             type="button"
             onClick={() => {
               onPick(MonacoEditor.Uri.parse(file));
             }}
           >
-            load
+            {file.replace('file:///', '')}
           </button>
         </li>
       ))}
     </ul>
   );
-};
+});
