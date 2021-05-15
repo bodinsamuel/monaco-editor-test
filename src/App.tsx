@@ -18,13 +18,7 @@ const App: React.FC = observer(() => {
   return (
     <div className="App">
       <div className="grid-files">
-        <Files
-          onPick={(val) => {
-            store.current = val;
-          }}
-          files={store.files}
-          path="/"
-        />
+        <Files files={store.files} path="/" />
       </div>
       <div className="grid-editor">
         {store.current && <CodeEditor uri={store.current} />}

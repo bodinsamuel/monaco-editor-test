@@ -71,6 +71,10 @@ export class FileSystem implements System {
   readDirectoryWithType(path: string): FSMap {
     const files = new Map<string, FileType>();
     const entries = this.#files.entries();
+    if (path !== '/' && path.endsWith('/')) {
+      // eslint-disable-next-line no-param-reassign
+      path = path.substr(0, path.length - 1);
+    }
 
     for (const [filePath, type] of entries) {
       if (dirname(filePath) === path) {

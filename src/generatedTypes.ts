@@ -57,6 +57,7 @@ const files: { path: string; source: any; pkg: string | false }[] = [
 
 export function loadTypes(monaco: typeof MonacoEditor): void {
   fs.createDirectory('/node_modules/');
+  fs.createDirectory('/node_modules/@types/');
 
   for (const file of files) {
     const uri = monaco.Uri.parse(file.path);
@@ -68,7 +69,7 @@ export function loadTypes(monaco: typeof MonacoEditor): void {
         // First load is good but HMR makes json -> string
         file.source = JSON.stringify(file.source, null, '  ');
       }
-      fs.createDirectory(`/node_modules/${file.pkg}`);
+      fs.createDirectory(`/node_modules/${file.pkg}/`);
       store.deps.add(file.pkg as string);
     } else {
       // d.ts
@@ -84,7 +85,7 @@ export function loadTypes(monaco: typeof MonacoEditor): void {
 
     store.models.set(
       file.path,
-      fileToModel(monaco, uri, file.source, 'typescript')
+      fileToModel(monaco, uri, file.source, isJson ? 'json' : 'typescript')
     );
   }
 
