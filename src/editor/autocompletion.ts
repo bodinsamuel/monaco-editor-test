@@ -7,8 +7,11 @@ const triggerCharacters = ["'", '"', '.', '/'];
 /**
  * This setup autocompletion for import and require syntax
  */
-export function setupAutocompletion(monaco:typeof MonacoEditor) {
-  function provideCompletionItems(model: MonacoEditor.editor.ITextModel, position: MonacoEditor.Position): MonacoEditor.languages.CompletionList {
+export function setupAutocompletion(monaco: typeof MonacoEditor) {
+  function provideCompletionItems(
+    model: MonacoEditor.editor.ITextModel,
+    position: MonacoEditor.Position
+  ): MonacoEditor.languages.CompletionList {
     // Get editor content before the pointer
     const textUntilPosition = model.getValueInRange(
       {
@@ -32,19 +35,17 @@ export function setupAutocompletion(monaco:typeof MonacoEditor) {
       }
 
       return {
-        suggestions: Array.from(store.deps.values()).map(name => ({
+        suggestions: Array.from(store.deps.values()).map((name) => ({
           label: name,
           kind: monaco.languages.CompletionItemKind.Module,
           detail: name,
           insertText: name,
-          range: undefined as any // required but seems not important
-        }))
-
+          range: undefined as any, // required but seems not important
+        })),
       };
     }
 
-
-    return { suggestions: [] }
+    return { suggestions: [] };
     // User is trying to import a file
     // const prefix = textUntilPosition.match(/[./]+$/)![0];
 
@@ -105,18 +106,24 @@ export function setupAutocompletion(monaco:typeof MonacoEditor) {
     //   })
     //   .filter(Boolean);
   }
-  const disposableJS = monaco.languages.registerCompletionItemProvider('javascript', {
-    triggerCharacters,
-    provideCompletionItems
-  });
+  const disposableJS = monaco.languages.registerCompletionItemProvider(
+    'javascript',
+    {
+      triggerCharacters,
+      provideCompletionItems,
+    }
+  );
 
-  const disposableTS = monaco.languages.registerCompletionItemProvider('typescript', {
-    triggerCharacters,
-    provideCompletionItems
-  });
+  const disposableTS = monaco.languages.registerCompletionItemProvider(
+    'typescript',
+    {
+      triggerCharacters,
+      provideCompletionItems,
+    }
+  );
 
   return () => {
     disposableJS.dispose();
     disposableTS.dispose();
-  }
+  };
 }

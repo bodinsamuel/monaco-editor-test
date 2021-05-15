@@ -29,11 +29,7 @@ export function fileToModel(
     return model;
   }
 
-  model = monaco.editor.createModel(
-    file,
-    language,
-    uri
-  );
+  model = monaco.editor.createModel(file, language, uri);
   model.updateOptions({
     tabSize: 2,
     insertSpaces: true,

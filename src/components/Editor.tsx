@@ -1,21 +1,27 @@
 import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import { StaticServices } from 'monaco-editor/esm/vs/editor/standalone/browser/standaloneServices';
 import React, { useEffect, useRef, useCallback } from 'react';
-import { useMount, useUnmount} from 'react-use';
+import { useMount, useUnmount } from 'react-use';
 
-import { DEFAULT_OPTIONS, DEFAULT_READONLY_OPTIONS } from './helpers/constants';
-import { loadTypes } from './generatedTypes';
-import { setupLanguages } from './editor/languages';
-import { setupAutocompletion } from './editor/autocompletion';
-import { store } from './editor/store';
+import {
+  DEFAULT_OPTIONS,
+  DEFAULT_READONLY_OPTIONS,
+} from '../helpers/constants';
+import { loadTypes } from '../generatedTypes';
+import { setupLanguages } from '../editor/languages';
+import { setupAutocompletion } from '../editor/autocompletion';
+import { store } from '../editor/store';
 
 const codeEditorService = StaticServices.codeEditorService.get();
 
 // Store editor states such as cursor position, selection and scroll position for each model
-const editorStates = new Map<MonacoEditor.Uri, MonacoEditor.editor.ICodeEditorViewState | null>();
+const editorStates = new Map<
+  MonacoEditor.Uri,
+  MonacoEditor.editor.ICodeEditorViewState | null
+>();
 
 interface Props {
-  uri: MonacoEditor.Uri,
+  uri: MonacoEditor.Uri;
   theme?: 'vs-dark' | 'vs-light';
   override?: MonacoEditor.editor.IEditorOptions;
 
@@ -121,9 +127,7 @@ export const CodeEditor: React.FC<Props> = ({
 
     loadTypes(MonacoEditor);
 
-    disposables.current.push(
-      setupAutocompletion(MonacoEditor),
-    );
+    disposables.current.push(setupAutocompletion(MonacoEditor));
 
     openFile();
   });
@@ -185,5 +189,5 @@ export const CodeEditor: React.FC<Props> = ({
     }
   }, [override]);
 
-  return <div ref={refNode} style={{height: "50vh", width: "80vw"}} />;
+  return <div ref={refNode} style={{ height: '100vh' }} />;
 };

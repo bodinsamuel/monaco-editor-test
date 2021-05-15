@@ -6,7 +6,7 @@ import { store } from './editor/store';
 import { fileToModel } from './helpers/fileToModel';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const packageRegex = /.*?([-a-zA-Z0-9_]+)\/package\.json/
+const packageRegex = /.*?([-a-zA-Z0-9_]+)\/package\.json/;
 
 // prettier-ignore
 const files: { path: string; source: any; pkg: string | false }[] = [
@@ -49,9 +49,10 @@ const files: { path: string; source: any; pkg: string | false }[] = [
   { path: "/node_modules/parse-json/index.d.ts", source: require("!!raw-loader!@types/parse-json/index.d.ts").default, pkg: 'parse-json' },
 
   // TODO move this elsewhere
-  { path: "/tmp/algoliaSettings.ts", source: require("!!raw-loader!./tmp/algoliaSettings.ts").default, pkg: false },
-  { path: "/tmp/fileTypes.ts", source: require("!!raw-loader!./tmp/fileTypes.ts").default, pkg: false },
-  { path: "/tmp/config.ts", source: require("!!raw-loader!./tmp/config.ts").default, pkg: false },
+  { path: "/algoliaSettings.ts", source: require("!!raw-loader!./tmp/algoliaSettings.ts").default, pkg: false },
+  { path: "/fileTypes.ts", source: require("!!raw-loader!./tmp/fileTypes.ts").default, pkg: false },
+  { path: "/config.ts", source: require("!!raw-loader!./tmp/config.ts").default, pkg: false },
+  { path: "/index.ts", source: require("!!raw-loader!./tmp/index.ts").default, pkg: false },
 ];
 
 export function loadTypes(monaco: typeof MonacoEditor): void {
@@ -69,14 +70,18 @@ export function loadTypes(monaco: typeof MonacoEditor): void {
       store.deps.add(file.pkg as string);
     } else {
       // d.ts
-      const disposable = monaco.languages.typescript.typescriptDefaults.addExtraLib(
-        file.source,
-        file.path
-      );
+      const disposable =
+        monaco.languages.typescript.typescriptDefaults.addExtraLib(
+          file.source,
+          file.path
+        );
       store.types.set(file.path, disposable);
     }
 
-    store.models.set(file.path, fileToModel(monaco, uri, file.source, 'typescript'));
+    store.models.set(
+      file.path,
+      fileToModel(monaco, uri, file.source, 'typescript')
+    );
   }
 
   monaco.languages.typescript.typescriptDefaults.addExtraLib(
