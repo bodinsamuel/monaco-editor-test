@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { useMount } from 'react-use';
 import { CodeEditor } from './components/Editor';
 import { Files } from './components/Files';
@@ -9,11 +9,10 @@ import { context } from './store';
 
 const App: React.FC = observer(() => {
   const store = useContext(context);
-  const [uri, setUri] = useState<MonacoEditor.Uri>();
 
   useMount(() => {
     const tmpUri = MonacoEditor.Uri.parse('/index.ts');
-    setUri(tmpUri);
+    store.current = tmpUri;
   });
 
   return (
@@ -21,12 +20,15 @@ const App: React.FC = observer(() => {
       <div className="grid-files">
         <Files
           onPick={(val) => {
-            setUri(val);
+            store.current = val;
           }}
           files={store.files}
+          path="/"
         />
       </div>
-      <div className="grid-editor">{uri && <CodeEditor uri={uri} />}</div>
+      <div className="grid-editor">
+        {store.current && <CodeEditor uri={store.current} />}
+      </div>
     </div>
   );
 });

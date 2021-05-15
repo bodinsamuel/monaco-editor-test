@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { basename } from 'path';
+import { dirname } from 'path';
 import type { System } from 'typescript';
 
 export enum FileType {
@@ -7,6 +7,8 @@ export enum FileType {
   DIRECTORY = 0x4000,
   SYMLINK = 0xa000,
 }
+
+export type FSMap = Map<string, FileType>;
 
 export class FileSystem implements System {
   #files;
@@ -19,7 +21,7 @@ export class FileSystem implements System {
 
   public readonly useCaseSensitiveFileNames = true;
 
-  constructor(files: Map<string, FileType>, content: Map<string, string>) {
+  constructor(files: FSMap, content: Map<string, string>) {
     this.#files = files;
     this.#content = content;
   }
@@ -58,8 +60,21 @@ export class FileSystem implements System {
     const entries = this.#files.entries();
 
     for (const [filePath] of entries) {
-      if (basename(filePath) === path) {
-        files.push(path);
+      if (dirname(filePath) === path) {
+        files.push(filePath);
+      }
+    }
+
+    return files;
+  }
+
+  readDirectoryWithType(path: string): FSMap {
+    const files = new Map<string, FileType>();
+    const entries = this.#files.entries();
+
+    for (const [filePath, type] of entries) {
+      if (dirname(filePath) === path) {
+        files.set(filePath, type);
       }
     }
 

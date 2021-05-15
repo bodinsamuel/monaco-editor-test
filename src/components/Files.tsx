@@ -2,36 +2,56 @@ import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { autorun } from 'mobx';
-import { FileType } from '../fs';
+import classnames from 'classnames';
+import { File, Folder } from 'react-feather';
+import { FileType, FSMap } from '../fs';
+import { fs, store } from '../store';
 
 interface Props {
   onPick: (uri: MonacoEditor.Uri) => void;
-  files: Map<string, FileType>;
+  files: FSMap;
+  path: string;
 }
 
-export const Files: React.FC<Props> = observer(({ onPick, files }) => {
-  const [list, setList] = useState<string[]>([]);
+export const Files: React.FC<Props> = observer(({ onPick, files, path }) => {
+  const [list, setList] = useState<FSMap>();
+  const current = store.current?.toString().replace('file://', '');
 
   useEffect(() => {
     autorun(() => {
-      setList(Array.from(files.keys()));
+      const tmp = fs.readDirectoryWithType(path);
+      setList(tmp);
     });
   }, []);
 
   return (
     <ul className="fileTree">
-      {list.map((file) => (
-        <li key={file}>
-          <button
-            type="button"
-            onClick={() => {
-              onPick(MonacoEditor.Uri.parse(file));
-            }}
-          >
-            {file.replace('file:///', '')}
-          </button>
-        </li>
-      ))}
+      {list &&
+        Array.from(list.entries()).map(([file, type]) => {
+          return (
+            <li key={file}>
+              <div
+                className={classnames(
+                  'fileRow',
+                  current === file && 'selected'
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    onPick(MonacoEditor.Uri.parse(file));
+                  }}
+                >
+                  <div className="fileRowIcon">
+                    {type === FileType.FILE && <File size={10} />}
+                    {type === FileType.DIRECTORY && <Folder size={10} />}
+                  </div>
+                  <div className="fileRowName">{file.replace('/', '')}</div>
+                </button>
+              </div>
+            </li>
+          );
+        })}
     </ul>
   );
 });

@@ -92,6 +92,7 @@
     "@types/react-dom": "^17.0.5",
     "@typescript-eslint/eslint-plugin": "4.23.0",
     "@typescript-eslint/parser": "4.23.0",
+    "classnames": "2.3.1",
     "eslint": "7.26.0",
     "eslint-config-airbnb-typescript": "12.3.1",
     "eslint-config-prettier": "8.3.0",
@@ -108,9 +109,10 @@
     "eslint-webpack-plugin": "^2.5.2",
     "mobx": "6.3.0",
     "mobx-react-lite": "3.2.0",
-    "sass": "1.32.13",
     "prettier": "2.3.0",
-    "raw-loader": "4.0.2"
+    "raw-loader": "4.0.2",
+    "react-feather": "2.0.9",
+    "sass": "1.32.13"
   },
   "jest": {
     "roots": [

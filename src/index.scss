@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 13px;
 }
 
 code {
@@ -33,9 +34,32 @@ code {
 .fileTree {
   list-style: none;
   padding: 0;
+}
+
+.fileRow {
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background: lighten(#2c2c2c, 2.9);
+  }
+  &.selected {
+    background: lighten(#2c2c2c, 4.9);
+  }
   button {
     appearance: none;
     background: transparent;
     color: inherit;
+    border: none;
+    display: flex;
+    flex-wrap: nowrap;
+    flex: 1;
+    overflow: hidden;
+    height: 22px;
+    line-height: 22px;
+    cursor: pointer;
+  }
+  .fileRowIcon {
+    padding: 0 6px 0 0;
   }
 }
