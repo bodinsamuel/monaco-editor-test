@@ -1,38 +1,33 @@
 import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import { StaticServices } from 'monaco-editor/esm/vs/editor/standalone/browser/standaloneServices';
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useMount, useUnmount } from 'react-use';
 
-import {
-  DEFAULT_OPTIONS,
-  DEFAULT_READONLY_OPTIONS,
-} from '../helpers/constants';
+import { DEFAULT_OPTIONS, DEFAULT_READONLY_OPTIONS } from '../editor/constants';
 import { loadTypes } from '../generatedTypes';
 import { setupLanguages } from '../editor/languages';
 import { setupAutocompletion } from '../editor/autocompletion';
 import { store } from '../store/index';
+import { setupDefinitionProvider } from '../editor/definitionProvider';
+import { setupTypeDefinitionProvider } from '../editor/typeDefinition';
+import { setupGoToDefinition } from '../editor/goToDefinition';
 
 const codeEditorService = StaticServices.codeEditorService.get();
 
-// Store editor states such as cursor position, selection and scroll position for each model
-const editorStates = new Map<
-  MonacoEditor.Uri,
-  MonacoEditor.editor.ICodeEditorViewState | null
->();
-
 interface Props {
-  uri: MonacoEditor.Uri;
+  uri?: MonacoEditor.Uri;
   theme?: 'vs-dark' | 'vs-light';
   override?: MonacoEditor.editor.IEditorOptions;
 
   onChange?: (
     content: string,
     editor: MonacoEditor.editor.IStandaloneCodeEditor,
-    monaco: typeof MonacoEditor
+    monaco: typeof MonacoEditor,
   ) => any;
   onOpenFile?: (
+    uri: MonacoEditor.Uri,
     editor: MonacoEditor.editor.IStandaloneCodeEditor,
-    monaco: typeof MonacoEditor
+    monaco: typeof MonacoEditor,
   ) => void;
 }
 
@@ -49,30 +44,14 @@ export const CodeEditor: React.FC<Props> = ({
   const refSubscription = useRef<MonacoEditor.IDisposable>();
   const disposables = useRef<(() => void)[]>([]);
 
-  /**
-   * Load a model into MonacoEditor.
-   */
-  const openFile = useCallback((): void => {
-    const model = MonacoEditor.editor.getModel(uri);
-
-    refEditor.current!.setModel(model);
-
-    // Restore the editor state for the file
-    const editorState = editorStates.get(uri);
-
-    if (editorState) {
-      refEditor.current!.restoreViewState(editorState);
-    }
-
-    refEditor.current!.focus();
-
+  const openFile = (): void => {
     // Subscribe to change in value so we can notify the parent
     if (refSubscription.current) {
       refSubscription.current.dispose();
     }
 
     if (onOpenFile) {
-      onOpenFile(refEditor.current!, MonacoEditor);
+      onOpenFile(uri!, refEditor.current!, MonacoEditor);
     }
 
     refSubscription.current = refEditor
@@ -84,7 +63,7 @@ export const CodeEditor: React.FC<Props> = ({
           onChange(value, refEditor.current!, MonacoEditor);
         }
       });
-  }, [uri, onChange, onOpenFile]);
+  };
 
   useMount(() => {
     console.log('on mount a');
@@ -103,31 +82,34 @@ export const CodeEditor: React.FC<Props> = ({
       refNode.current,
       { ...base, ...override, theme },
       {
-        codeEditorService: Object.assign(Object.create(codeEditorService), {
-          openCodeEditor: async ({ options }: any, editor: any) => {
-            // Open the file with this path
-            // This should set the model with the path and value
-            // this.props.onOpenPath(resource.path);
-
-            // Move cursor to the desired position
-            editor.setSelection(options.selection);
-
-            // Scroll the editor to bring the desired line into focus
-            editor.revealLine(options.selection.startLineNumber);
-
-            return Promise.resolve({
-              getControl: () => editor,
-            });
-          },
-        }),
-      }
+        // codeEditorService: Object.assign(Object.create(codeEditorService), {
+        //   openCodeEditor: async ({ options }: any, editor: any) => {
+        //     // Open the file with this path
+        //     // This should set the model with the path and value
+        //     // this.props.onOpenPath(resource.path);
+        //     // Move cursor to the desired position
+        //     editor.setSelection(options.selection);
+        //     // Scroll the editor to bring the desired line into focus
+        //     editor.revealLine(options.selection.startLineNumber);
+        //     return Promise.resolve({
+        //       getControl: () => editor,
+        //     });
+        //   },
+        // }),
+      },
     );
+    store.editor = refEditor.current;
 
     setupLanguages(MonacoEditor);
 
     loadTypes(MonacoEditor);
 
-    disposables.current.push(setupAutocompletion(MonacoEditor));
+    disposables.current.push(
+      setupAutocompletion(MonacoEditor),
+      setupDefinitionProvider(MonacoEditor),
+      setupTypeDefinitionProvider(MonacoEditor),
+      setupGoToDefinition(MonacoEditor),
+    );
 
     openFile();
   });
@@ -154,9 +136,10 @@ export const CodeEditor: React.FC<Props> = ({
 
   // componentDidUpdate for file change
   useEffect(() => {
-    if (!prevPath.current || prevPath.current.toString() !== uri.toString()) {
-      // Only change state if the previous path is different, this is useful to only retrigger monaco model creation
-      editorStates.set(prevPath.current!, refEditor.current!.saveViewState());
+    if (
+      uri &&
+      (!prevPath.current || prevPath.current.toString() !== uri.toString())
+    ) {
       openFile();
       prevPath.current = uri;
     }

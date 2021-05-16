@@ -81,16 +81,13 @@ const Folder: React.FC<{ path: string }> = ({ path }) => {
   /* eslint-enable @typescript-eslint/no-use-before-define */
 };
 
-export const Files: React.FC<Props> = observer(({ files, path }) => {
+export const Files: React.FC<Props> = observer(({ path }) => {
   const [list, setList] = useState<FSMap>();
   const current = store.current?.toString().replace('file://', '');
 
   useEffect(() => {
     autorun(() => {
-      const tmp = fs.readDirectoryWithType(path);
-      console.log('reading', path, tmp);
-
-      setList(tmp);
+      setList(fs.readDirectoryWithType(path));
     });
   }, []);
 

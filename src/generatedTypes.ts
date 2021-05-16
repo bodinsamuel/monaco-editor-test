@@ -3,7 +3,6 @@
 /* eslint-disable import/no-webpack-loader-syntax */
 import type MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import { store, fs } from './store/index';
-import { fileToModel } from './helpers/fileToModel';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const packageRegex = /.*?([-a-zA-Z0-9_]+)\/package\.json/;
@@ -53,6 +52,7 @@ const files: { path: string; source: any; pkg: string | false }[] = [
   { path: "/fileTypes.ts", source: require("!!raw-loader!./tmp/fileTypes.ts").default, pkg: false },
   { path: "/config.ts", source: require("!!raw-loader!./tmp/config.ts").default, pkg: false },
   { path: "/index.ts", source: require("!!raw-loader!./tmp/index.ts").default, pkg: false },
+  { path: "/crawler.d.ts", source: require("!!raw-loader!./tmp/crawler.d.ts").default, pkg: false },
 ];
 
 export function loadTypes(monaco: typeof MonacoEditor): void {
@@ -72,25 +72,14 @@ export function loadTypes(monaco: typeof MonacoEditor): void {
       const disposable =
         monaco.languages.typescript.typescriptDefaults.addExtraLib(
           file.source,
-          file.path
+          file.path,
         );
       store.types.set(file.path, disposable);
     }
 
     fs.writeFile(file.path, file.source);
 
-    store.models.set(
-      file.path,
-      fileToModel(monaco, uri, file.source, 'typescript') // 'typescript' type is mandatory to make TS understand package.json as module
-    );
+    // 'typescript' type is mandatory to make TS understand package.json as module
+    store.getOrCreateModel(monaco, uri, file.source, 'typescript');
   }
-
-  monaco.languages.typescript.typescriptDefaults.addExtraLib(
-    `import type { Config } from '/tmp/config';
-    declare global {
-      class Crawler  { constructor(config: Config) };
-      function crawler(params: Config): boolean;
-    }`,
-    '/test.d.ts'
-  );
 }

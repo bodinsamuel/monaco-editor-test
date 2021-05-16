@@ -1,7 +1,7 @@
 import type MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
 export function getCompilterOptions(
-  monaco: typeof MonacoEditor
+  monaco: typeof MonacoEditor,
 ): MonacoEditor.languages.typescript.CompilerOptions {
   const compilerOptions: MonacoEditor.languages.typescript.CompilerOptions = {
     target: monaco.languages.typescript.ScriptTarget.ES2016,
@@ -43,10 +43,10 @@ export async function setupLanguages(monaco: typeof MonacoEditor) {
 
   const compilerOptions = getCompilterOptions(monaco);
   monaco.languages.typescript.javascriptDefaults.setCompilerOptions(
-    compilerOptions
+    compilerOptions,
   );
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions(
-    compilerOptions
+    compilerOptions,
   );
 
   monaco.languages.html.htmlDefaults.setOptions({

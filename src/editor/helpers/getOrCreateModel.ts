@@ -1,14 +1,15 @@
 import type MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import { Languages } from '../types';
+import type { Languages } from '../../types';
 
 /**
  * Transform a { path, file } to a monaco model.
+ * Do not use outside of the store unless you don't want the file to appear in the tree.
  */
-export function fileToModel(
+export function getOrCreateModel(
   monaco: typeof MonacoEditor,
   uri: MonacoEditor.Uri,
   file: string,
-  language: Languages
+  language: Languages,
 ): MonacoEditor.editor.ITextModel {
   let model = monaco.editor.getModel(uri);
 
@@ -24,7 +25,7 @@ export function fileToModel(
           text: file,
         },
       ],
-      () => null
+      () => null,
     );
     return model;
   }

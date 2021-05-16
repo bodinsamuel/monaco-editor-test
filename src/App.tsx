@@ -21,7 +21,12 @@ const App: React.FC = observer(() => {
         <Files files={store.files} path="/" />
       </div>
       <div className="grid-editor">
-        {store.current && <CodeEditor uri={store.current} />}
+        <CodeEditor
+          uri={store.current}
+          onOpenFile={(uri) => {
+            store.currentLoaded = uri;
+          }}
+        />
       </div>
     </div>
   );

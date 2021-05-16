@@ -10,7 +10,7 @@ const triggerCharacters = ["'", '"', '.', '/'];
 export function setupAutocompletion(monaco: typeof MonacoEditor) {
   function provideCompletionItems(
     model: MonacoEditor.editor.ITextModel,
-    position: MonacoEditor.Position
+    position: MonacoEditor.Position,
   ): MonacoEditor.languages.CompletionList {
     // Get editor content before the pointer
     const textUntilPosition = model.getValueInRange(
@@ -20,7 +20,7 @@ export function setupAutocompletion(monaco: typeof MonacoEditor) {
         endLineNumber: position.lineNumber,
         endColumn: position.column,
       },
-      1
+      1,
     );
 
     if (!regex.test(textUntilPosition)) {
@@ -111,7 +111,7 @@ export function setupAutocompletion(monaco: typeof MonacoEditor) {
     {
       triggerCharacters,
       provideCompletionItems,
-    }
+    },
   );
 
   const disposableTS = monaco.languages.registerCompletionItemProvider(
@@ -119,7 +119,7 @@ export function setupAutocompletion(monaco: typeof MonacoEditor) {
     {
       triggerCharacters,
       provideCompletionItems,
-    }
+    },
   );
 
   return () => {
