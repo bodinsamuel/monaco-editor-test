@@ -5,6 +5,7 @@ module.exports = {
   extends: ['airbnb-typescript', 'prettier', 'plugin:prettier/recommended'],
 
   rules: {
+    'no-continue': ['off'],
     'no-underscore-dangle': ['off'],
     'no-restricted-syntax': ['off'],
     'import/extensions': ['off'],
