@@ -5,6 +5,7 @@ import React, { useContext } from 'react';
 import { useMount } from 'react-use';
 import { CodeEditor } from './components/Editor';
 import { Files } from './components/Files';
+import { Tabs } from './components/Tabs';
 import { context } from './store';
 
 const App: React.FC = observer(() => {
@@ -17,16 +18,15 @@ const App: React.FC = observer(() => {
 
   return (
     <div className="App">
-      <div className="grid-files">
+      <div className="gridFiles">
+        <div className="sidebarHeader">Explorer</div>
         <Files files={store.files} path="/" />
       </div>
-      <div className="grid-editor">
-        <CodeEditor
-          uri={store.current}
-          onOpenFile={(uri) => {
-            store.currentLoaded = uri;
-          }}
-        />
+      <div className="gridTabs">
+        <Tabs current={store.current} opened={store.opened} />
+      </div>
+      <div className="gridEditor">
+        <CodeEditor uri={store.current} />
       </div>
     </div>
   );

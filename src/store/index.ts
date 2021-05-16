@@ -1,5 +1,5 @@
 import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import { makeAutoObservable } from 'mobx';
+import { observable, makeAutoObservable } from 'mobx';
 import { createContext } from 'react';
 import { getOrCreateModel } from '../editor/helpers/getOrCreateModel';
 import { openModel } from '../editor/helpers/openModel';
@@ -12,26 +12,44 @@ export const editorStates = new Map<
   MonacoEditor.editor.ICodeEditorViewState | null
 >();
 
-class Store {
+export class Store {
+  /**
+   * Dependencies loaded: name of folder.
+   */
   deps = new Set<string>();
 
+  /**
+   * d.ts loaded: one entry per file.
+   */
   types = new Map<string, MonacoEditor.IDisposable>();
 
+  /**
+   * Every model loaded: one entry per model (file).
+   */
   models = new Map<string, MonacoEditor.editor.ITextModel>();
 
+  /**
+   * Every model opened: one entry per model (file).
+   */
+  opened = observable(new Set<string>([]), { deep: false });
+
+  /**
+   * Virtual File System: one row per path (file + dir) loaded.
+   */
   files = new Map<string, FileType>();
 
+  /**
+   * Main editor ref.
+   */
   editor: MonacoEditor.editor.IStandaloneCodeEditor | null = null;
 
   private _current: MonacoEditor.Uri | undefined = undefined;
-
-  private _currentLoaded: MonacoEditor.Uri | null = null;
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  get current() {
+  get current(): MonacoEditor.Uri | undefined {
     return this._current;
   }
 
@@ -39,15 +57,12 @@ class Store {
     this._current = uri;
     if (uri) {
       openModel(uri, MonacoEditor, this.editor!, editorStates);
+      this.opened.add(uri.path);
     }
   }
 
-  get currentLoaded() {
-    return this._currentLoaded;
-  }
-
-  set currentLoaded(uri: MonacoEditor.Uri | null) {
-    this._currentLoaded = uri;
+  static toUri(uri: string): MonacoEditor.Uri {
+    return MonacoEditor.Uri.parse(uri);
   }
 
   getOrCreateModel(
@@ -61,6 +76,48 @@ class Store {
     this.models.set(uri.path, model);
 
     return model;
+  }
+
+  closeTab(uri: string) {
+    const isFocused = this.current?.path === uri;
+
+    if (!isFocused) {
+      // We close other tab without anything else todo
+      this.opened.delete(uri);
+      return;
+    }
+
+    if (this.opened.size === 1) {
+      // close
+      return;
+    }
+
+    // Pick next tab on the right (basic heuristic, could be better)
+    let nextTab: string | undefined;
+    const entries = Array.from(this.opened.values());
+
+    // eslint-disable-next-line no-plusplus
+    for (let index = 0; index < entries.length; index++) {
+      const entry = entries[index];
+      if (entry !== uri) {
+        continue;
+      }
+
+      if (index + 1 === entries.length) {
+        // last item, take the left one
+        nextTab = entries[index - 1];
+      } else {
+        nextTab = entries[index + 1];
+      }
+      break;
+    }
+
+    this.opened.delete(uri);
+    if (nextTab) {
+      this.current = MonacoEditor.Uri.parse(nextTab);
+    } else {
+      this.current = undefined;
+    }
   }
 }
 

@@ -66,8 +66,6 @@ export const CodeEditor: React.FC<Props> = ({
   };
 
   useMount(() => {
-    console.log('on mount a');
-
     if (!refNode.current) {
       return;
     }
@@ -115,7 +113,6 @@ export const CodeEditor: React.FC<Props> = ({
   });
 
   useUnmount(() => {
-    console.log('on unmount');
     if (refSubscription.current) {
       refSubscription.current.dispose();
     }
@@ -172,5 +169,5 @@ export const CodeEditor: React.FC<Props> = ({
     }
   }, [override]);
 
-  return <div ref={refNode} style={{ height: '100vh' }} />;
+  return <div ref={refNode} style={{ height: '100%' }} />;
 };
