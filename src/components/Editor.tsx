@@ -1,18 +1,12 @@
 import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import { StaticServices } from 'monaco-editor/esm/vs/editor/standalone/browser/standaloneServices';
+// import { StaticServices } from 'monaco-editor/esm/vs/editor/standalone/browser/standaloneServices';
 import React, { useEffect, useRef } from 'react';
 import { useMount, useUnmount } from 'react-use';
 
 import { DEFAULT_OPTIONS, DEFAULT_READONLY_OPTIONS } from '../editor/constants';
-import { loadTypes } from '../generatedTypes';
-import { setupLanguages } from '../editor/languages';
-import { setupAutocompletion } from '../editor/autocompletion';
 import { store } from '../store/index';
-import { setupDefinitionProvider } from '../editor/definitionProvider';
-import { setupTypeDefinitionProvider } from '../editor/typeDefinition';
-import { setupGoToDefinition } from '../editor/goToDefinition';
 
-const codeEditorService = StaticServices.codeEditorService.get();
+// const codeEditorService = StaticServices.codeEditorService.get();
 
 interface Props {
   uri?: MonacoEditor.Uri;
@@ -42,7 +36,6 @@ export const CodeEditor: React.FC<Props> = ({
   const refEditor = useRef<MonacoEditor.editor.IStandaloneCodeEditor>();
   const prevPath = useRef<MonacoEditor.Uri>();
   const refSubscription = useRef<MonacoEditor.IDisposable>();
-  const disposables = useRef<(() => void)[]>([]);
 
   const openFile = (): void => {
     // Subscribe to change in value so we can notify the parent
@@ -66,6 +59,7 @@ export const CodeEditor: React.FC<Props> = ({
   };
 
   useMount(() => {
+    console.log('on mount');
     if (!refNode.current) {
       return;
     }
@@ -98,17 +92,6 @@ export const CodeEditor: React.FC<Props> = ({
     );
     store.editor = refEditor.current;
 
-    setupLanguages(MonacoEditor);
-
-    loadTypes(MonacoEditor);
-
-    disposables.current.push(
-      setupAutocompletion(MonacoEditor),
-      setupDefinitionProvider(MonacoEditor),
-      setupTypeDefinitionProvider(MonacoEditor),
-      setupGoToDefinition(MonacoEditor),
-    );
-
     openFile();
   });
 
@@ -119,16 +102,6 @@ export const CodeEditor: React.FC<Props> = ({
     if (refEditor.current) {
       refEditor.current.dispose();
     }
-
-    disposables.current.forEach((item) => {
-      item();
-    });
-
-    store.types.forEach((item) => item.dispose());
-    store.models.forEach((item) => item.dispose());
-    store.types.clear();
-    store.models.clear();
-    store.deps.clear();
   });
 
   // componentDidUpdate for file change

@@ -88,7 +88,9 @@ export class Store {
     }
 
     if (this.opened.size === 1) {
-      // close
+      // close self
+      this.opened.delete(uri);
+      this.current = undefined;
       return;
     }
 
