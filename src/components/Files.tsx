@@ -42,7 +42,7 @@ const File: React.FC<{
             store.current = MonacoEditor.Uri.parse(path);
           }}
         >
-          <div className="fileRowIcon">
+          <div className="fileRowIcon file">
             <FileIcon size={10} />
           </div>
           <div className="fileRowName">{displayName}</div>
@@ -69,8 +69,8 @@ const Folder: React.FC<{ path: string }> = ({ path }) => {
         style={{ paddingLeft: `${depth * leftPad}px` }}
       >
         <button type="button" onClick={() => setOpen(!open)}>
-          <div className="fileRowIcon">
-            {open ? <FolderIconOpen size={10} /> : <FolderIcon size={10} />}
+          <div className={classnames('fileRowIcon', 'folder', open && 'open')}>
+            {open ? <FolderIconOpen size={14} /> : <FolderIcon size={14} />}
           </div>
           <div className="fileRowName">{displayName}</div>
         </button>

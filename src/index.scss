@@ -3,7 +3,7 @@
 $bgEditor: #1e1e1e;
 $bgSidebar: #252526;
 $colorFaded: #777;
-$colorNormal: #ccc;
+$colorNormal: #ddd;
 $colorSelected: #fff;
 
 body {
@@ -78,14 +78,20 @@ body {
     flex-wrap: nowrap;
     flex: 1;
     overflow: hidden;
-    height: 22px;
+    height: 24px;
     line-height: 22px;
     cursor: pointer;
     text-align: left;
   }
   .fileRowIcon {
-    padding: 0 6px 0 0;
+    padding: 0 5px 0 0;
     color: #777;
+    &.folder {
+      padding-top: 3px;
+      &.open {
+        padding-top: 2px;
+      }
+    }
   }
   .fileRowName {
     text-overflow: ellipsis;
