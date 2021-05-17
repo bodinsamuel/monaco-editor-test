@@ -69,7 +69,7 @@ export class FileSystem implements System {
   }
 
   readDirectoryWithType(path: string): FSMap {
-    const files = new Map<string, FileType>();
+    const files: [string, FileType][] = [];
     const entries = this.#files.entries();
     if (path !== '/' && path.endsWith('/')) {
       // eslint-disable-next-line no-param-reassign
@@ -78,11 +78,23 @@ export class FileSystem implements System {
 
     for (const [filePath, type] of entries) {
       if (dirname(filePath) === path) {
-        files.set(filePath, type);
+        files.push([filePath, type]);
       }
     }
 
-    return files;
+    // Sort folder first alpha then files alpha
+    files.sort(([pathA, fileTypeA], [pathB, fileTypeB]) => {
+      if (fileTypeA !== fileTypeB) {
+        return fileTypeA - fileTypeB;
+      }
+      if (pathA < pathB) {
+        return -1;
+      }
+
+      return 0;
+    });
+
+    return new Map<string, FileType>(files);
   }
 
   exit() {}
