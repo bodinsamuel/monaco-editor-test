@@ -23,9 +23,9 @@
     "experimentalDecorators": true,
   },
   "include": [
-    "src"
+    "pkgs"
   ],
   "exclude": [
-    "src/tmp/index.ts"
+    "pkgs/front-tmp/src/tmp/index.ts"
   ]
 }
