@@ -1,4 +1,4 @@
-import { load } from ".";
+import { load } from '.';
 
 it('should load', () => {
   const res = load({
@@ -6,5 +6,5 @@ it('should load', () => {
     pathNodeModules: '../../',
     pathToWrite: 'here.ts',
   });
-  expect(res).toEqual('te')
-})
+  expect(res).toEqual('te');
+});

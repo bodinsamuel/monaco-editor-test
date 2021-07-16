@@ -9,6 +9,7 @@ export const ES6_PATTERN =
 // https://regex101.com/r/hdEpzO/8
 export const ES6_IMPORT = /import\s+?\(?('|")(.*)('|")\)?;?/gm;
 
-export const TRIPLE_SLASHES_REGEXP_RAW =
-  '^///\\s*<reference\\s*lib="([^"]*)"\\s*/>$';
-export const TRIPLE_SLASHES_REGEXP = new RegExp(TRIPLE_SLASHES_REGEXP_RAW, 'i');
+export const TRIPLE_SLASHES_REGEXP = new RegExp(
+  '^///\\s*<reference\\s*(lib|path)="([^"]*)"\\s*/>$',
+  'igm',
+);

@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import fs from 'fs/promises';
 import path from 'path';
 import { MainOptions, MapModule, Module } from '../types';
@@ -11,20 +12,19 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
   const fetched: MapModule = new Map();
 
   const entries = toFetch.entries();
-  for (const [, entry] of entries) {
-    const { folderPath, name } = JSON.parse(entry);
-    const filePath = path.join(folderPath, name);
+  for (const [, filePath] of entries) {
+    const folderPath = path.dirname(filePath);
 
     // console.log('-- Processing ', filePath);
     const text = await fs.readFile(filePath, { encoding: 'utf-8' });
-    const dependencies = await getDependenciesInModule(text, folderPath);
+    const dependencies = await getDependenciesInModule(opts, text, folderPath);
+
     const module = filePath.replace(opts.pathNodeModules, '').split('/')[1];
     const pathInsideModule = filePath.replace(
       path.join(opts.pathNodeModules, module, '/'),
-      ''
+      '',
     );
     fetched.set(filePath, {
-      name,
       filePath,
       text,
       dependencies,
@@ -33,7 +33,7 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
     });
 
     for (const dep of dependencies) {
-      if (toFetch.has(JSON.stringify(dep))) {
+      if (toFetch.has(dep.filePath)) {
         // console.log('already found', fp);
         continue;
       }
@@ -43,7 +43,7 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
         continue;
       }
 
-      toFetch.add(JSON.stringify(dep));
+      toFetch.add(dep.filePath);
     }
   }
 

@@ -6,7 +6,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "lint": "eslint --ext=jsx,ts,tsx,js src",
+    "lint": "eslint --ext=jsx,ts,tsx,js pkgs",
     "build:dev": "tsc -w --preserveWatchOutput -p pkgs/monaco-type-loader"
   },
   "eslintConfig": {
@@ -49,26 +49,27 @@
     "jest-resolve": "26.6.0",
     "jest-watch-typeahead": "0.6.1",
     "prettier": "2.3.0",
+    "ts-node": "10.1.0",
     "typescript": "^4.2.4"
   },
   "jest": {
     "roots": [
-      "<rootDir>/src"
+      "<rootDir>/pkgs"
     ],
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!src/**/*.d.ts"
+      "pkgs/**/*.{ts,tsx}",
+      "!pkgs/**/*.d.ts"
     ],
     "setupFiles": [
       "react-app-polyfill/jsdom"
     ],
     "setupFilesAfterEnv": [],
     "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
-      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+      "<rootDir>/pkgs/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/pkgs/**/*.{spec,test}.{js,jsx,ts,tsx}"
     ],
     "testEnvironment": "jsdom",
-    "testRunner": "/Users/samuelbodin/code/monaco-editor-test/node_modules/jest-circus/runner.js",
+    "testRunner": "<rootDir>/node_modules/jest-circus/runner.js",
     "transform": {
       "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/config/jest/babelTransform.js",
       "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",

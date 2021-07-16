@@ -1,5 +1,8 @@
 {
   "name": "front-tmp",
+  "dependencies": {
+    "typescript": "4.3.5"
+  },
   "devDependencies": {
     "@babel/core": "7.12.3",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
