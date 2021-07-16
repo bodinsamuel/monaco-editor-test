@@ -1,4 +1,3 @@
-import path from 'path';
 import { MainOptions, Module } from '../types';
 import { generatedTPL } from '../tpl/generated';
 
@@ -9,12 +8,8 @@ export function generateTypeFile(
   { modules, tsVersion }: { modules: Module[]; tsVersion: string },
 ) {
   const entries = modules.map((l) => {
-    const fpFromFinal = l.filePath.replace(
-      path.join(opts.pathNodeModules, '/'),
-      '',
-    );
-    const strRequire = JSON.stringify(`!!raw-loader!${fpFromFinal}`);
-    return `{ path: "/node_modules/${l.module}/${l.pathInsideModule}", source: require(${strRequire}).default },`;
+    const strRequire = JSON.stringify(`!!raw-loader!${l.filePath}`);
+    return `{ pkg: "${l.pkg}", path: "${l.pathMonaco}", source: require(${strRequire}).default },`;
   });
 
   return generatedTPL({

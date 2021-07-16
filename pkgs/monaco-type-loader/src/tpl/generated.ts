@@ -18,7 +18,7 @@ interface Entry { path: string; source: any; pkg: string | false };
 
 // prettier-ignore
 export const entries: Entry[] = [
-  ${entries.join('')}
+  ${entries.join('\r\n')}
 ];
 
 ${loadEntriesFunction.toString()}

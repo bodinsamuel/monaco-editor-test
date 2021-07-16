@@ -8,6 +8,7 @@ import {
 } from '../constants';
 import { MainOptions, ModuleLight } from '../types';
 import { findEntriesFromPackage } from './findEntriesFromPackage';
+import { isPackage } from './isPackage';
 
 /**
  * Find new module to load in file.
@@ -73,7 +74,7 @@ export function getTripleSlashes(
  * Process module.
  */
 export async function processModules(
-  opts: MainOptions,
+  opts: Pick<MainOptions, 'pathNodeModules' | 'logger'>,
   modules: Set<string>,
   folderPath: string,
 ): Promise<ModuleLight[]> {
@@ -82,16 +83,11 @@ export async function processModules(
 
   for (const [name] of entries) {
     // console.log(`Looking at ${name}`);
-
-    const startWithAt = name.startsWith('@');
-    const slashes = name.split('/');
-    const modIsScopedPackageOnly = startWithAt && slashes.length === 2;
-    const modIsPackageOnly = !startWithAt && slashes.length === 1;
-    const isNodePackage = modIsPackageOnly || modIsScopedPackageOnly;
+    const isNodePackage = isPackage(name);
     const isDenoModule = name.startsWith('https://');
 
     if (isDenoModule) {
-      console.warn('Deno module found, but not supported', name);
+      opts.logger?.warn('Deno module found, but not supported', name);
       continue;
     }
 
@@ -114,7 +110,8 @@ export async function processModules(
         continue;
       }
     } catch (e) {
-      console.warn('Error while finding a module', e);
+      opts.logger?.warn('Error while finding a module', e);
+      continue;
     }
 
     found.add({
@@ -128,7 +125,7 @@ export async function processModules(
 }
 
 export async function getDependenciesInModule(
-  opts: MainOptions,
+  opts: Pick<MainOptions, 'pathNodeModules'>,
   sourceCode: string,
   folderPath: string,
 ): Promise<ModuleLight[]> {

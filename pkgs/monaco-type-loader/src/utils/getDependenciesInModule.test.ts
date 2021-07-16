@@ -1,4 +1,11 @@
-import { extractFromRegex, getTripleSlashes } from './getDependenciesInModule';
+import path from 'path';
+import {
+  extractFromRegex,
+  getTripleSlashes,
+  processModules,
+} from './getDependenciesInModule';
+
+const nm = path.join(__dirname, '../../../../node_modules/');
 
 describe('getTripleSlashes', () => {
   it('should find path', () => {
@@ -64,5 +71,26 @@ describe('extractFromRegex', () => {
     expect(res).toStrictEqual(
       new Set(['./bar', 'fs', 'estree', 'fs/promises']),
     );
+  });
+});
+
+describe('processModules', () => {
+  it('should transforms modules correctly', async () => {
+    const res = await processModules(
+      {
+        pathNodeModules: nm,
+      },
+      new Set(['cheerio', './helpers']),
+      path.join(nm, '@types/eslint/'),
+    );
+
+    expect(res).toStrictEqual([
+      {
+        filePath: path.join(nm, 'cheerio/lib/index.d.ts'),
+      },
+      {
+        filePath: path.join(nm, '@types/eslint/helpers.d.ts'),
+      },
+    ]);
   });
 });
