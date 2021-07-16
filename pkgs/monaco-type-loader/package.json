@@ -4,9 +4,8 @@
   "description": "Load type definition into monaco-editor",
   "main": "src/index.ts",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^15.0.3",
+    "@types/node": "^15.14.2",
     "@types/prettier": "^2.3.2",
     "prettier": "^2.3.2"
   }

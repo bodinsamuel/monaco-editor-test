@@ -1,12 +1,12 @@
 
 // -------- Types
-export interface ModuleEntry { path: string; name: string };
+export interface ModuleLight { filePath: string };
 
 export interface Module {
   name: string;
   filePath: string;
   text: string;
-  dependencies: ModuleEntry[];
+  dependencies: ModuleLight[];
   module: string;
   pathInsideModule: string;
 };
@@ -14,7 +14,7 @@ export interface Module {
 export type MapModule = Map<string, Module>;
 
 export interface MainOptions {
-  modules: ModuleEntry[];
+  entries: string[];
   pathToWrite: string;
   pathNodeModules: string;
 }

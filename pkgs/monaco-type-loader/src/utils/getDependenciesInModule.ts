@@ -1,12 +1,12 @@
-import { ES6_PATTERN, REQUIRE_PATTERN, ES6_IMPORT } from "../constants";
-import { ModuleEntry } from "../types";
+import { ES6_PATTERN, REQUIRE_PATTERN, ES6_IMPORT, TRIPLE_SLASHES_REGEXP } from "../constants";
+import {  ModuleLight } from "../types";
 import { processModuleRef } from "./processModule";
 
 
 export async function getDependenciesInModule(
   sourceCode: string,
   folderPath: string
-): Promise<ModuleEntry[]> {
+): Promise<ModuleLight[]> {
   const deps = getTripleSlashes(sourceCode, folderPath);
 
   deps.push(
@@ -26,18 +26,24 @@ export async function getDependenciesInModule(
  **/
 export function extractFromRegex(sourceCode: string): Set<string> {
   const foundModules = new Set<string>();
-  let match: RegExpExecArray | undefined;
+  let match: RegExpExecArray | null;
 
   while ((match = ES6_PATTERN.exec(sourceCode)) !== null) {
-    if (match[6]) foundModules.add(match[6]);
+    if (match[6]) {
+      foundModules.add(match[6]);
+    }
   }
 
   while ((match = REQUIRE_PATTERN.exec(sourceCode)) !== null) {
-    if (match[5]) foundModules.add(match[5]);
+    if (match[5]) {
+      foundModules.add(match[5]);
+    }
   }
 
   while ((match = ES6_IMPORT.exec(sourceCode)) !== null) {
-    if (match[2]) foundModules.add(match[2]);
+    if (match[2]) {
+      foundModules.add(match[2]);
+    }
   }
 
   return foundModules;
@@ -47,14 +53,19 @@ export function extractFromRegex(sourceCode: string): Set<string> {
 /**
  * Find triple slashes in a file.
  */
- export function getTripleSlashes(sourceCode: string, folderPath: string): ModuleEntry[] {
-  return sourceCode
-    .split(/[\r]?\n/)
-    .filter((l) => l.match(DEPENDENCY_REGEXP))
-    .map((l) => {
-      return {
-        folderPath,
-        name: `lib.${l.match(DEPENDENCY_REGEXP)![1]}.d.ts`,
-      };
+ export function getTripleSlashes(sourceCode: string, folderPath: string): ModuleLight[] {
+  const matches =  sourceCode.match(TRIPLE_SLASHES_REGEXP);
+  if (!matches) {
+    return [];
+  }
+
+  const modules = new Map<string, ModuleLight>();
+  for (const match of matches) {
+    const filePath = `lib.${match[1]}.d.ts`;
+    modules.set(filePath, {
+      filePath,
     });
+  }
+
+  return Array.from(modules.values());
 }

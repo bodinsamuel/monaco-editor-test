@@ -1,12 +1,13 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { MainOptions, MapModule, Module, ModuleEntry } from '../types';
+import { MainOptions, MapModule, Module } from '../types';
+import { getDependenciesInModule } from './getDependenciesInModule';
 
 /**
  * Fetch all modules.
  */
 export async function fetchModules(opts: MainOptions): Promise<Module[]> {
-  const toFetch = new Set<string>(opts.modules.map((lib) => JSON.stringify(lib)));
+  const toFetch = new Set<string>(opts.entries);
   const fetched: MapModule = new Map();
 
   const entries = toFetch.entries();
@@ -16,7 +17,7 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
 
     // console.log('-- Processing ', filePath);
     const text = await fs.readFile(filePath, { encoding: 'utf-8' });
-    const dependencies = await getDependencies(text, folderPath);
+    const dependencies = await getDependenciesInModule(text, folderPath);
     const module = filePath.replace(opts.pathNodeModules, '').split('/')[1];
     const pathInsideModule = filePath.replace(
       path.join(opts.pathNodeModules, module, '/'),
@@ -32,15 +33,16 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
     });
 
     for (const dep of dependencies) {
-      const fp = path.join(dep.folderPath, dep.name);
       if (toFetch.has(JSON.stringify(dep))) {
         // console.log('already found', fp);
         continue;
       }
-      if (fetched.has(fp)) {
+
+      if (fetched.has(dep.filePath)) {
         // console.log('already fetched', fp);
         continue;
       }
+
       toFetch.add(JSON.stringify(dep));
     }
   }

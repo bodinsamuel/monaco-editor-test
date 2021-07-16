@@ -1,12 +1,12 @@
 import fs from 'fs/promises';
 import prettier from 'prettier';
 
-import { MainOptions, ModuleEntry } from "./types";
+import { MainOptions } from "./types";
 import { fetchModules } from './utils/fetchModules';
 import { generateTypeFile } from './utils/generateTypeFile';
 
 
-export async function load(opts: MainOptions): Promise<void> {
+export async function load(opts: MainOptions): Promise<string> {
   // resolve
   const modules = await fetchModules(opts);
 
@@ -17,13 +17,13 @@ export async function load(opts: MainOptions): Promise<void> {
     modules
       .map(({ filePath, dependencies, module }) => {
         return `- [${module}] ${filePath}
-    => deps: ${dependencies.map(({ name }) => name).join(', ')}]`;
+    => deps: ${dependencies.map(({ filePath }) => filePath).join(', ')}]`;
       })
       .join('\r\n')
   );
   console.log('');
 
-  const toWrite = generateTypeFile(opts, modules);
+  const toWrite = generateTypeFile(opts, {modules, tsVersion: '0.0.0'});
 
   // format
   const prettierOptions = await prettier.resolveConfig(__dirname);
@@ -36,6 +36,6 @@ export async function load(opts: MainOptions): Promise<void> {
 }
 
 export async function loadAndWrite(opts: MainOptions): Promise<void> {
-  const formatted = load(opts.modules);
-  await fs.writeFile(opts.path, formatted);
+  const formatted = await load(opts);
+  await fs.writeFile(opts.pathToWrite, formatted);
 }
