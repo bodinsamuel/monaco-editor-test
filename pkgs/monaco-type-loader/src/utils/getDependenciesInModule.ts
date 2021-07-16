@@ -1,13 +1,13 @@
 /* eslint-disable no-cond-assign */
 import path from 'path';
+import fs from 'fs/promises';
 import {
   ES6_PATTERN,
   REQUIRE_PATTERN,
-  ES6_IMPORT,
   TRIPLE_SLASHES_REGEXP,
 } from '../constants';
 import { MainOptions, ModuleLight } from '../types';
-import { processModuleRef } from './processModule';
+import { findEntriesFromPackage } from './findEntriesFromPackage';
 
 /**
  * Find new module to load in file.
@@ -18,7 +18,6 @@ export function extractFromRegex(sourceCode: string): Set<string> {
   let match: RegExpExecArray | null;
 
   while ((match = ES6_PATTERN.exec(sourceCode)) !== null) {
-    console.log(match);
     if (match[6]) {
       foundModules.add(match[6]);
     }
@@ -29,12 +28,6 @@ export function extractFromRegex(sourceCode: string): Set<string> {
       foundModules.add(match[4]);
     }
   }
-
-  // while ((match = ES6_IMPORT.exec(sourceCode)) !== null) {
-  //   if (match[2]) {
-  //     foundModules.add(match[2]);
-  //   }
-  // }
 
   return foundModules;
 }
@@ -76,6 +69,64 @@ export function getTripleSlashes(
   return Array.from(modules.values());
 }
 
+/**
+ * Process module.
+ */
+export async function processModules(
+  opts: MainOptions,
+  modules: Set<string>,
+  folderPath: string,
+): Promise<ModuleLight[]> {
+  const found = new Set<ModuleLight>();
+  const entries = modules.entries();
+
+  for (const [name] of entries) {
+    // console.log(`Looking at ${name}`);
+
+    const startWithAt = name.startsWith('@');
+    const slashes = name.split('/');
+    const modIsScopedPackageOnly = startWithAt && slashes.length === 2;
+    const modIsPackageOnly = !startWithAt && slashes.length === 1;
+    const isNodePackage = modIsPackageOnly || modIsScopedPackageOnly;
+    const isDenoModule = name.startsWith('https://');
+
+    if (isDenoModule) {
+      console.warn('Deno module found, but not supported', name);
+      continue;
+    }
+
+    if (isNodePackage) {
+      const maybe = await findEntriesFromPackage(
+        path.join(opts.pathNodeModules, name),
+      );
+      maybe.forEach((fp) => found.add({ filePath: fp }));
+      continue;
+    }
+
+    const absolutePathForModule = path.resolve(
+      path.join(folderPath, `${name}.d.ts`),
+    );
+
+    try {
+      const stat = await fs.lstat(absolutePathForModule);
+      if (!stat.isFile()) {
+        // console.log(' Not a file', absolutePathForModule);
+        continue;
+      }
+    } catch (e) {
+      console.warn('Error while finding a module', e);
+    }
+
+    found.add({
+      // folderPath: path.dirname(absolutePathForModule),
+      // name: path.basename(absolutePathForModule),
+      filePath: absolutePathForModule,
+    });
+  }
+
+  return Array.from(found);
+}
+
 export async function getDependenciesInModule(
   opts: MainOptions,
   sourceCode: string,
@@ -84,7 +135,7 @@ export async function getDependenciesInModule(
   const deps = getTripleSlashes(opts, sourceCode, folderPath);
 
   deps.push(
-    ...(await processModuleRef(extractFromRegex(sourceCode), folderPath)),
+    ...(await processModules(opts, extractFromRegex(sourceCode), folderPath)),
   );
 
   return deps;

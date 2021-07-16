@@ -15,6 +15,7 @@ module.exports = {
     '@typescript-eslint/no-implied-eval': ['off'],
     '@typescript-eslint/no-throw-literal': ['off'],
     '@typescript-eslint/return-await': ['off'],
+    'no-await-in-loop': ['off'],
 
     '@typescript-eslint/no-unused-vars': ['warn'],
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],

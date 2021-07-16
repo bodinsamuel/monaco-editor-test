@@ -10,6 +10,7 @@ describe('getTripleSlashes', () => {
     foobar`,
       '/node_modules/@types/eslint/',
     );
+
     expect(res).toStrictEqual([
       { filePath: '/node_modules/@types/eslint/helpers.d.ts' },
     ]);
@@ -24,6 +25,7 @@ describe('getTripleSlashes', () => {
     foobar`,
       '/node_modules/@types/eslint/',
     );
+
     expect(res).toStrictEqual([
       { filePath: '/node_modules/typescript/lib/lib.es2019.array.d.ts' },
     ]);
@@ -36,26 +38,31 @@ describe('extractFromRegex', () => {
       import { JSONSchema4 } from 'json-schema';
       import * as ESTree from 'estree';
       import { foo } from './bar';
-      export * from './hello;
-      import world = require('./world')`);
+      export * from './hello';
+      import world = require('./world')
+      import { serve } from "https://deno.land/std@v0.12/http/server.ts";`);
+
     expect(res).toStrictEqual(
-      new Set(['./bar', './hello', './world', 'json-schema', 'estree']),
+      new Set([
+        './bar',
+        './hello',
+        './world',
+        'json-schema',
+        'https://deno.land/std@v0.12/http/server.ts',
+        'estree',
+      ]),
     );
   });
 
   it('should find require', () => {
     const res = extractFromRegex(`
+    const estree = require("estree")
     const fs = require('fs')
     const fsp = require('fs/promises')
     const { foo } = require('./bar')`);
-    expect(res).toStrictEqual(new Set(['./bar', 'fs', 'fs/promises']));
-  });
 
-  it.only('should find er', () => {
-    const res = extractFromRegex(`
-      export * from './hello;`);
     expect(res).toStrictEqual(
-      new Set(['./bar', './hello', './world', 'json-schema', 'estree']),
+      new Set(['./bar', 'fs', 'estree', 'fs/promises']),
     );
   });
 });

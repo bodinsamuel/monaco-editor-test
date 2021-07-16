@@ -6,9 +6,6 @@ export const REQUIRE_PATTERN =
 export const ES6_PATTERN =
   /(import|export)((?!from)(?!require)(.|\n))*?(from|require\()\s?('|")(.*)('|")\)?;?$/gm;
 
-// https://regex101.com/r/hdEpzO/8
-export const ES6_IMPORT = /import\s+?\(?('|")(.*)('|")\)?;?/gm;
-
 export const TRIPLE_SLASHES_REGEXP = new RegExp(
   '^///\\s*<reference\\s*(lib|path)="([^"]*)"\\s*/>$',
   'igm',
