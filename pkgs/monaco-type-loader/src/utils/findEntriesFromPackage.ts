@@ -3,6 +3,9 @@ import fs from 'fs/promises';
 import { MainOptions, ModuleLight } from '../types';
 import { resolveModules } from './resolveModules';
 
+function toTypeDef(name: string): string {
+  return name.replace('/', '__').replace('@', '');
+}
 export async function findEntriesFromPackage(
   opts: Pick<MainOptions, 'logger' | 'rootDir'>,
   pkgJson: string,
@@ -42,6 +45,12 @@ export async function findEntriesFromPackage(
 
     toResolve.add(fp);
   }
+
+  if (!json.name.startsWith('@types/')) {
+    // Autotry @types/package
+    toResolve.add(`@types/${toTypeDef(json.name)}`);
+  }
+
   resolveModules(opts, toResolve).forEach((resolve) => {
     found.add(resolve);
   });

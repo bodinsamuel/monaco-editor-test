@@ -1,5 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`should auto load @types/prettier even if not specified 1`] = `
+"/* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
+// This is a generated file, do not edit.
+// Built with @h1fra/monaco-type-loader; ts version v0.0.0
+
+import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+
+interface Entry {
+  path: string;
+  source: any;
+  pkg: string | false;
+}
+
+// prettier-ignore
+export const entries: Entry[] = [
+  { pkg: \\"prettier\\", path: \\"/pkgs/monaco-type-loader/node_modules/prettier/package.json\\", source: require(\\"!!raw-loader!/pkgs/monaco-type-loader/node_modules/prettier/package.json\\") },
+{ pkg: \\"@types/prettier\\", path: \\"/node_modules/@types/prettier/package.json\\", source: require(\\"!!raw-loader!/node_modules/@types/prettier/package.json\\") },
+{ pkg: \\"@types/prettier\\", path: \\"/node_modules/@types/prettier/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@types/prettier/index.d.ts\\").default },
+];
+"
+`;
+
 exports[`should load and generate file 1`] = `
 "/* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
 // This is a generated file, do not edit.
@@ -50,6 +72,27 @@ export const entries: Entry[] = [
 { pkg: \\"domutils\\", path: \\"/node_modules/domutils/lib/helpers.d.ts\\", source: require(\\"!!raw-loader!/node_modules/domutils/lib/helpers.d.ts\\").default },
 { pkg: \\"dom-serializer\\", path: \\"/node_modules/dom-serializer/package.json\\", source: require(\\"!!raw-loader!/node_modules/dom-serializer/package.json\\") },
 { pkg: \\"dom-serializer\\", path: \\"/node_modules/dom-serializer/lib/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/dom-serializer/lib/index.d.ts\\").default },
+];
+"
+`;
+
+exports[`should not auto load @types/arg because the package is already typed 1`] = `
+"/* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
+// This is a generated file, do not edit.
+// Built with @h1fra/monaco-type-loader; ts version v0.0.0
+
+import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+
+interface Entry {
+  path: string;
+  source: any;
+  pkg: string | false;
+}
+
+// prettier-ignore
+export const entries: Entry[] = [
+  { pkg: \\"arg\\", path: \\"/node_modules/arg/package.json\\", source: require(\\"!!raw-loader!/node_modules/arg/package.json\\") },
+{ pkg: \\"arg\\", path: \\"/node_modules/arg/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/arg/index.d.ts\\").default },
 ];
 "
 `;

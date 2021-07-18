@@ -30,3 +30,29 @@ it('should load nothing', async () => {
 
   expect(loader.modules).toStrictEqual([]);
 });
+
+it('should auto load @types/prettier even if not specified', async () => {
+  const loader = new MonacoAutomaticFileLoader({
+    rootDir: path.join(__dirname, '..', '..', '..'),
+    entries: new Set(['prettier']),
+    pathNodeModules: path.join(__dirname, '../../../node_modules/'),
+    pathToWrite: 'gen.ts',
+    logger: null,
+  });
+  await loader.load();
+
+  expect(await loader.generateFile()).toMatchSnapshot();
+});
+
+it('should not auto load @types/arg because the package is already typed', async () => {
+  const loader = new MonacoAutomaticFileLoader({
+    rootDir: path.join(__dirname, '..', '..', '..'),
+    entries: new Set(['arg']),
+    pathNodeModules: path.join(__dirname, '../../../node_modules/'),
+    pathToWrite: 'gen.ts',
+    logger: null,
+  });
+  await loader.load();
+
+  expect(await loader.generateFile()).toMatchSnapshot();
+});
