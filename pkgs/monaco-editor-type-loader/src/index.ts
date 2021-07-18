@@ -1,11 +1,11 @@
 import fs from 'fs/promises';
+import path from 'path';
 import prettier from 'prettier';
 
 import { MainOptions, Module } from './types';
 import { fetchModules } from './utils/fetchModules';
 import { generateImportFile } from './utils/generateImportFile';
 import { shouldBeDir } from './utils/shouldBeDir';
-import { shouldBeFile } from './utils/shouldBeFile';
 
 function debug({ logger, rootDir }: MainOptions, modules: Module[]) {
   logger?.debug('');
@@ -40,10 +40,9 @@ export class MonacoAutomaticFileLoader {
   }
 
   async load(): Promise<void> {
-    const { logger, pathNodeModules, rootDir } = this.#opts;
+    const { logger, rootDir } = this.#opts;
     logger?.debug('Monaco Automatic File Loader starting...');
 
-    await shouldBeDir(pathNodeModules, 'pathNodeModules');
     await shouldBeDir(rootDir, 'rootDir');
 
     logger?.debug('Fetching...');
@@ -71,9 +70,11 @@ export class MonacoAutomaticFileLoader {
   }
 
   async loadAndWrite(): Promise<void> {
-    await shouldBeFile(this.#opts.pathToWrite!, 'pathToWrite');
+    const pathToWrite = path.isAbsolute(this.#opts.pathToWrite!)
+      ? this.#opts.pathToWrite!
+      : path.join(this.#opts.rootDir, this.#opts.pathToWrite!);
     await this.load();
 
-    await fs.writeFile(this.#opts.pathToWrite!, await this.generateFile());
+    await fs.writeFile(pathToWrite!, await this.generateFile());
   }
 }

@@ -5,8 +5,6 @@ exports[`should auto load @types/prettier even if not specified 1`] = `
 // This is a generated file, do not edit.
 // Built with @h1fra/monaco-type-loader; ts version v0.0.0
 
-import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-
 interface Entry {
   path: string;
   source: any;
@@ -15,7 +13,7 @@ interface Entry {
 
 // prettier-ignore
 export const entries: Entry[] = [
-  { pkg: \\"prettier\\", path: \\"/pkgs/monaco-type-loader/node_modules/prettier/package.json\\", source: require(\\"!!raw-loader!/pkgs/monaco-type-loader/node_modules/prettier/package.json\\") },
+  { pkg: \\"prettier\\", path: \\"/pkgs/monaco-editor-type-loader/node_modules/prettier/package.json\\", source: require(\\"!!raw-loader!/pkgs/monaco-editor-type-loader/node_modules/prettier/package.json\\") },
 { pkg: \\"@types/prettier\\", path: \\"/node_modules/@types/prettier/package.json\\", source: require(\\"!!raw-loader!/node_modules/@types/prettier/package.json\\") },
 { pkg: \\"@types/prettier\\", path: \\"/node_modules/@types/prettier/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@types/prettier/index.d.ts\\").default },
 ];
@@ -26,8 +24,6 @@ exports[`should do something 1`] = `
 "/* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
 // This is a generated file, do not edit.
 // Built with @h1fra/monaco-type-loader; ts version v0.0.0
-
-import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
 interface Entry {
   path: string;
@@ -47,8 +43,6 @@ exports[`should handle scoped package 1`] = `
 "/* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
 // This is a generated file, do not edit.
 // Built with @h1fra/monaco-type-loader; ts version v0.0.0
-
-import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
 interface Entry {
   path: string;
@@ -104,8 +98,6 @@ exports[`should load and generate file 1`] = `
 // This is a generated file, do not edit.
 // Built with @h1fra/monaco-type-loader; ts version v0.0.0
 
-import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-
 interface Entry {
   path: string;
   source: any;
@@ -116,7 +108,7 @@ interface Entry {
 export const entries: Entry[] = [
   { pkg: \\"cheerio\\", path: \\"/node_modules/cheerio/package.json\\", source: require(\\"!!raw-loader!/node_modules/cheerio/package.json\\") },
 { pkg: \\"@types/prettier\\", path: \\"/node_modules/@types/prettier/package.json\\", source: require(\\"!!raw-loader!/node_modules/@types/prettier/package.json\\") },
-{ pkg: false, path: \\"/pkgs/monaco-type-loader/src/testData/testData.d.ts\\", source: require(\\"!!raw-loader!/pkgs/monaco-type-loader/src/testData/testData.d.ts\\").default },
+{ pkg: false, path: \\"/pkgs/monaco-editor-type-loader/src/testData/testData.d.ts\\", source: require(\\"!!raw-loader!/pkgs/monaco-editor-type-loader/src/testData/testData.d.ts\\").default },
 { pkg: \\"cheerio\\", path: \\"/node_modules/cheerio/lib/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/cheerio/lib/index.d.ts\\").default },
 { pkg: \\"@types/prettier\\", path: \\"/node_modules/@types/prettier/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@types/prettier/index.d.ts\\").default },
 { pkg: \\"cheerio\\", path: \\"/node_modules/cheerio/lib/cheerio.d.ts\\", source: require(\\"!!raw-loader!/node_modules/cheerio/lib/cheerio.d.ts\\").default },
@@ -157,8 +149,6 @@ exports[`should not auto load @types/arg because the package is already typed 1`
 "/* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
 // This is a generated file, do not edit.
 // Built with @h1fra/monaco-type-loader; ts version v0.0.0
-
-import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
 interface Entry {
   path: string;

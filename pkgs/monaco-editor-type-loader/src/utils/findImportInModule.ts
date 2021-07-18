@@ -37,7 +37,7 @@ export function extractFromRegex(sourceCode: string): Set<string> {
  * Find triple slashes in a file.
  */
 export function getTripleSlashes(
-  opts: Pick<MainOptions, 'pathNodeModules'>,
+  opts: Pick<MainOptions, 'logger'>,
   sourceCode: string,
   folderPath: string,
 ): Set<string> {
@@ -52,15 +52,10 @@ export function getTripleSlashes(
       const filePath = path.join(folderPath, match[2]);
       modules.add(filePath);
     } else if (match[1] === 'lib') {
-      const filePath = path.join(
-        opts.pathNodeModules,
-        'typescript',
-        'lib',
-        `lib.${match[2]}.d.ts`,
-      );
+      const filePath = path.join('typescript', 'lib', `lib.${match[2]}.d.ts`);
       modules.add(filePath);
     } else if (match[1] === 'types') {
-      const filePath = path.join(opts.pathNodeModules, match[2]);
+      const filePath = match[2];
       modules.add(filePath);
     }
   }
@@ -71,11 +66,11 @@ export function getTripleSlashes(
 /**
  * Process module.
  */
-export async function normalizeImports(
-  opts: Pick<MainOptions, 'pathNodeModules' | 'logger'>,
+export function normalizeImports(
+  opts: Pick<MainOptions, 'logger'>,
   modules: Set<string>,
   folderPath: string,
-): Promise<Set<string>> {
+): Set<string> {
   const found = new Set<string>();
   const entries = modules.entries();
 
@@ -108,17 +103,17 @@ export async function normalizeImports(
 }
 
 export async function findImportInModule(
-  opts: Pick<MainOptions, 'pathNodeModules' | 'rootDir'>,
+  opts: Pick<MainOptions, 'logger' | 'rootDir'>,
   sourceCode: string,
   folderPath: string,
 ): Promise<Map<string, ModuleLight>> {
-  const res = new Set(getTripleSlashes(opts, sourceCode, folderPath));
+  const res = new Set<string>();
+  getTripleSlashes(opts, sourceCode, folderPath).forEach((mod) => res.add(mod));
 
   const imports = extractFromRegex(sourceCode);
-  const normalized = await normalizeImports(opts, imports, folderPath);
+  const normalized = normalizeImports(opts, imports, folderPath);
   normalized.forEach((mod) => res.add(mod));
 
-  const resolved = resolveModules(opts, normalized);
-
+  const resolved = resolveModules(opts, res);
   return resolved;
 }

@@ -25,6 +25,5 @@ export interface MainOptions {
   rootDir: string;
   entries: Set<string>;
   pathToWrite?: string;
-  pathNodeModules: string;
   logger?: Logger | null;
 }

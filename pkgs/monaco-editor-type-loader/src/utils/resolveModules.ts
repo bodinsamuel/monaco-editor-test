@@ -14,11 +14,8 @@ export function resolveModules(
   );
 
   for (const entry of rawEntries) {
-    // logger?.info('- Entry', entry);
     try {
       if (isPackage(entry)) {
-        // logger?.info('isPackage');
-
         const pkgJson = path.join(entry, 'package.json');
         const resolvePkg = require.resolve(pkgJson, {
           paths: nodeModulesPaths,

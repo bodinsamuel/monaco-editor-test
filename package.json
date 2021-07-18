@@ -3,11 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js",
     "lint": "eslint --ext=jsx,ts,tsx,js pkgs",
-    "build:dev": "tsc -w --preserveWatchOutput -p pkgs/monaco-type-loader"
+    "build:dev": "tsc -w --preserveWatchOutput -p pkgs/monaco-editor-type-loader"
   },
   "eslintConfig": {
     "extends": [
@@ -65,15 +62,15 @@
     ],
     "setupFilesAfterEnv": [],
     "testMatch": [
-      "<rootDir>/pkgs/**/__tests__/**/*.{js,jsx,ts,tsx}",
-      "<rootDir>/pkgs/**/*.{spec,test}.{js,jsx,ts,tsx}"
+      "<rootDir>/pkgs/**/__tests__/**/*.{jsx,ts,tsx}",
+      "<rootDir>/pkgs/**/*.{spec,test}.{jsx,ts,tsx}"
     ],
     "testEnvironment": "jsdom",
     "testRunner": "<rootDir>/node_modules/jest-circus/runner.js",
     "transform": {
-      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/config/jest/babelTransform.js",
-      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/pkgs/front-tmp/config/jest/babelTransform.js",
+      "^.+\\.css$": "<rootDir>/pkgs/front-tmp/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/pkgs/front-tmp/config/jest/fileTransform.js"
     },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",

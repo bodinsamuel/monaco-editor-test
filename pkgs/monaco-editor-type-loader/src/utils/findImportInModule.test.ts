@@ -10,9 +10,7 @@ const nm = path.join(__dirname, '../../../../node_modules/');
 describe('getTripleSlashes', () => {
   it('should find path', () => {
     const res = getTripleSlashes(
-      {
-        pathNodeModules: '/node_modules/',
-      },
+      {},
       `/// <reference path="helpers.d.ts" />
     foobar`,
       '/node_modules/@types/eslint/',
@@ -25,38 +23,32 @@ describe('getTripleSlashes', () => {
 
   it('should find lib', () => {
     const res = getTripleSlashes(
-      {
-        pathNodeModules: '/node_modules/',
-      },
+      {},
       `/// <reference lib="es2019.array" />
     foobar`,
       '/node_modules/@types/eslint/',
     );
 
     expect(res).toStrictEqual(
-      new Set(['/node_modules/typescript/lib/lib.es2019.array.d.ts']),
+      new Set(['typescript/lib/lib.es2019.array.d.ts']),
     );
   });
 
   it('should find types', () => {
     const res = getTripleSlashes(
-      {
-        pathNodeModules: '/node_modules/',
-      },
+      {},
       `/// <reference types="@types/cheerio" />
     foobar`,
       '/node_modules/@types/eslint/',
     );
 
-    expect(res).toStrictEqual(new Set(['/node_modules/@types/cheerio']));
+    expect(res).toStrictEqual(new Set(['@types/cheerio']));
   });
 
   // does not work yet
   it.skip('should handle combined', () => {
     const res = getTripleSlashes(
-      {
-        pathNodeModules: '/node_modules/',
-      },
+      {},
       `/// <reference types="node" lib="esnext" />
     foobar`,
       '/node_modules/@types/eslint/',
@@ -105,16 +97,14 @@ describe('extractFromRegex', () => {
 
 describe('normalizeImports', () => {
   it('should transforms modules correctly', async () => {
-    const res = await normalizeImports(
-      {
-        pathNodeModules: nm,
-      },
+    const res = normalizeImports(
+      {},
       new Set(['cheerio', './helpers']),
-      path.join(nm, '@types/eslint/'),
+      '/node_modules/@types/eslint/',
     );
 
     expect(res).toStrictEqual(
-      new Set(['cheerio', path.join(nm, '@types/eslint/helpers.d.ts')]),
+      new Set(['cheerio', '/node_modules/@types/eslint/helpers.d.ts']),
     );
   });
 });

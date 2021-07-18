@@ -33,21 +33,22 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
       continue;
     }
 
-    const isInsideNodeModules = mod.filePath.includes(opts.pathNodeModules);
+    const isInsideNodeModules = mod.filePath.includes('/node_modules/');
     const folderPath = path.dirname(mod.filePath);
 
     const text = await fs.readFile(mod.filePath, { encoding: 'utf-8' });
     const dependencies = await findImportInModule(opts, text, folderPath);
 
     let pkg = '';
+    let pathInsidePkg = '';
     if (isInsideNodeModules) {
-      const split = mod.filePath.replace(opts.pathNodeModules, '').split('/');
+      const splitNode = mod.filePath.split('/node_modules/');
+      const split = splitNode[splitNode.length - 1].split('/');
       pkg = split[0].startsWith('@') ? `${split[0]}/${split[1]}` : split[0];
+
+      pathInsidePkg = splitNode[splitNode.length - 1].replace(`/${pkg}`, '');
     }
 
-    const pathInsidePkg = pkg
-      ? mod.filePath.replace(path.join(opts.pathNodeModules, pkg, '/'), '')
-      : '';
     fetched.set(mod.filePath, {
       filePath: mod.filePath,
       text,

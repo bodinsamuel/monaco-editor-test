@@ -1,18 +1,12 @@
-import { MonacoAutomaticFileLoader } from '@h1fra/monaco-editor-type-loader/src';
+import path from 'path';
+import { MonacoAutomaticFileLoader } from '../../../monaco-editor-type-loader/src';
 
 (async () => {
   const loader = new MonacoAutomaticFileLoader({
-    rootDir: path.join(__dirname, '..', '..', '..'),
-    entries: new Set([
-      'cheerio',
-      '@types/prettier',
-      path.join(__dirname, '/testData/testData.d.ts'),
-    ]),
-    pathNodeModules: path.join(__dirname, '../../../node_modules/'),
-    pathToWrite: 'gen.ts',
-    logger: null,
+    rootDir: path.join(__dirname, '..'),
+    entries: new Set(['cheerio', 'parse-json', './tmp/index.d.ts']),
+    pathToWrite: './generatedTypes2.ts',
+    // logger: null,
   });
-  await loader.load();
-
-  expect(await loader.generateFile()).toMatchSnapshot();
+  await loader.loadAndWrite();
 })();
