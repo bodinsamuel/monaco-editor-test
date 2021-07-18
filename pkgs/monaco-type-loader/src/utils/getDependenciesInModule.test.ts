@@ -2,7 +2,7 @@ import path from 'path';
 import {
   extractFromRegex,
   getTripleSlashes,
-  processModules,
+  normalizeImports,
 } from './getDependenciesInModule';
 
 const nm = path.join(__dirname, '../../../../node_modules/');
@@ -74,9 +74,9 @@ describe('extractFromRegex', () => {
   });
 });
 
-describe('processModules', () => {
+describe('normalizeImports', () => {
   it('should transforms modules correctly', async () => {
-    const res = await processModules(
+    const res = await normalizeImports(
       {
         pathNodeModules: nm,
       },

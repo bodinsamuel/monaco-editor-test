@@ -5,11 +5,14 @@ export function generateImportFile(
   opts: MainOptions,
   { modules, tsVersion }: { modules: Module[]; tsVersion: string },
 ) {
-  const entries = modules.map((l) => {
-    const strRequire = JSON.stringify(`!!raw-loader!${l.pathMonaco}`);
-    return `{ pkg: ${l.pkg ? `"${l.pkg}"` : false}, path: "${
-      l.pathMonaco
-    }", source: require(${strRequire}).default },`;
+  const entries = modules.map((mod) => {
+    const strRequire = JSON.stringify(`!!raw-loader!${mod.pathMonaco}`);
+    const req = `require(${strRequire})${
+      mod.type === 'typescript' ? '.default' : ''
+    }`;
+    return `{ pkg: ${mod.pkg ? `"${mod.pkg}"` : false}, path: "${
+      mod.pathMonaco
+    }", source: ${req} },`;
   });
 
   return generatedTPL({

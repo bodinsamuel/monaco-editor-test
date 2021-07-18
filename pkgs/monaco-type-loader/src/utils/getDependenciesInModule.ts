@@ -1,14 +1,13 @@
 /* eslint-disable no-cond-assign */
 import path from 'path';
-import fs from 'fs/promises';
 import {
   ES6_PATTERN,
   REQUIRE_PATTERN,
   TRIPLE_SLASHES_REGEXP,
 } from '../constants';
 import { MainOptions, ModuleLight } from '../types';
-import { findEntriesFromPackage } from './findEntriesFromPackage';
 import { isPackage } from './isPackage';
+import { resolveModules } from './resolveModules';
 
 /**
  * Find new module to load in file.
@@ -40,20 +39,17 @@ export function getTripleSlashes(
   opts: Pick<MainOptions, 'pathNodeModules'>,
   sourceCode: string,
   folderPath: string,
-): ModuleLight[] {
+): Set<string> {
+  const modules = new Set<string>();
   const matches = sourceCode.matchAll(TRIPLE_SLASHES_REGEXP);
   if (!matches) {
-    return [];
+    return modules;
   }
 
-  const modules = new Map<string, ModuleLight>();
   for (const match of matches) {
     if (match[1] === 'path') {
       const filePath = path.join(folderPath, match[2]);
-      modules.set(filePath, {
-        type: 'typescript',
-        filePath,
-      });
+      modules.add(filePath);
     } else if (match[1] === 'lib') {
       const filePath = path.join(
         opts.pathNodeModules,
@@ -61,89 +57,62 @@ export function getTripleSlashes(
         'lib',
         `lib.${match[2]}.d.ts`,
       );
-
-      modules.set(filePath, {
-        type: 'typescript',
-        filePath,
-      });
+      modules.add(filePath);
     } else if (match[1] === 'types') {
       const filePath = path.join(opts.pathNodeModules, match[2]);
-
-      modules.set(filePath, {
-        type: 'package',
-        filePath,
-      });
+      modules.add(filePath);
     }
   }
 
-  return Array.from(modules.values());
+  return modules;
 }
 
 /**
  * Process module.
  */
-export async function processModules(
+export async function normalizeImports(
   opts: Pick<MainOptions, 'pathNodeModules' | 'logger'>,
   modules: Set<string>,
   folderPath: string,
-): Promise<ModuleLight[]> {
-  const found = new Set<ModuleLight>();
+): Promise<Set<string>> {
+  const found = new Set<string>();
   const entries = modules.entries();
 
   for (const [name] of entries) {
-    // console.log(`Looking at ${name}`);
-    const isNodePackage = isPackage(name);
+    // Deno
     const isDenoModule = name.startsWith('https://');
-
     if (isDenoModule) {
       opts.logger?.warn('Deno module found, but not supported', name);
       continue;
     }
 
+    // Package
+    const isNodePackage = isPackage(name);
     if (isNodePackage) {
-      const maybe = await findEntriesFromPackage(
-        path.join(opts.pathNodeModules, name),
-      );
-      maybe.forEach((fp) => found.add({ type: 'package', filePath: fp }));
+      found.add(name);
       continue;
     }
 
-    const absolutePathForModule = path.resolve(
-      path.join(folderPath, `${name}.d.ts`),
-    );
+    const absolutePathForModule = path.join(folderPath, `${name}.d.ts`);
 
-    try {
-      const stat = await fs.lstat(absolutePathForModule);
-      if (!stat.isFile()) {
-        // console.log(' Not a file', absolutePathForModule);
-        continue;
-      }
-    } catch (e) {
-      opts.logger?.warn('Error while finding a module', e);
-      continue;
-    }
-
-    found.add({
-      type: 'typescript',
-      // folderPath: path.dirname(absolutePathForModule),
-      // name: path.basename(absolutePathForModule),
-      filePath: absolutePathForModule,
-    });
+    found.add(absolutePathForModule);
   }
 
-  return Array.from(found);
+  return found;
 }
 
 export async function getDependenciesInModule(
-  opts: Pick<MainOptions, 'pathNodeModules'>,
+  opts: Pick<MainOptions, 'pathNodeModules' | 'rootDir'>,
   sourceCode: string,
   folderPath: string,
-): Promise<ModuleLight[]> {
-  const deps = getTripleSlashes(opts, sourceCode, folderPath);
+): Promise<Map<string, ModuleLight>> {
+  const res = new Set(getTripleSlashes(opts, sourceCode, folderPath));
 
-  deps.push(
-    ...(await processModules(opts, extractFromRegex(sourceCode), folderPath)),
-  );
+  const imports = extractFromRegex(sourceCode);
+  const normalized = await normalizeImports(opts, imports, folderPath);
+  normalized.forEach((mod) => res.add(mod));
 
-  return deps;
+  const resolved = resolveModules(opts, normalized);
+
+  return resolved;
 }

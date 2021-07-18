@@ -1,27 +1,31 @@
 import path from 'path';
 import fs from 'fs/promises';
+import { MainOptions, ModuleLight } from '../types';
+import { resolveModules } from './resolveModules';
 
 export async function findEntriesFromPackage(
-  pkgPath: string,
-): Promise<Set<string>> {
-  const pkgJson = path.join(pkgPath, 'package.json');
-  const found = new Set<string>();
-  let json: any;
+  opts: Pick<MainOptions, 'logger' | 'rootDir'>,
+  pkgJson: string,
+): Promise<[Record<string, any>, Set<ModuleLight>]> {
+  const { logger } = opts;
+  const pkgPath = path.dirname(pkgJson);
+  const found = new Set<ModuleLight>();
+  let json: Record<string, any>;
 
   try {
     const text = await fs.readFile(pkgJson, { encoding: 'utf-8' });
     json = JSON.parse(text);
   } catch (e) {
-    console.warn('Error while parsing a package.json', pkgJson);
-    return found;
+    logger?.warn('Error while parsing a package.json', pkgJson, e.message);
+    return [{}, found];
   }
-  found.add(pkgJson);
 
   let paths = json.typing || json.typings || json.types || ['index.d.ts'];
   if (!Array.isArray(paths)) {
     paths = [paths];
   }
 
+  const toResolve = new Set<string>();
   for (const pathDTS of paths) {
     let fp = path.join(pkgPath, pathDTS);
 
@@ -29,24 +33,18 @@ export async function findEntriesFromPackage(
       if (fp.endsWith('/')) {
         // a dir
         fp = path.join(fp, 'index.d.ts');
-      } else {
-        // maybe a folder not sure
+      } else if (!path.basename(fp).includes('.')) {
         fp = `${fp}.d.ts`;
+      } else {
+        logger?.warn('Skipping this file', fp);
       }
     }
 
-    try {
-      const exists = await fs.stat(fp);
-      if (exists) {
-        found.add(fp);
-        continue;
-      }
-    } catch (e) {
-      if (e.code !== 'ENOENT') {
-        console.warn('Error while finding a module', e);
-      }
-    }
+    toResolve.add(fp);
   }
+  resolveModules(opts, toResolve).forEach((resolve) => {
+    found.add(resolve);
+  });
 
-  return found;
+  return [json, found];
 }

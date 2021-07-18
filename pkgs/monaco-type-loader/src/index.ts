@@ -36,7 +36,7 @@ export class MonacoAutomaticFileLoader {
     this.#modules.push(...modules);
 
     logger?.debug('');
-    logger?.debug('Found', modules.length, 'types');
+    logger?.debug('Found', modules.length, 'modules');
     logger?.debug(
       modules
         .map(({ filePath, dependencies, pkg }) => {

@@ -4,69 +4,70 @@ import path from 'path';
 import { MainOptions, MapModule, Module } from '../types';
 import { findEntriesFromPackage } from './findEntriesFromPackage';
 import { getDependenciesInModule } from './getDependenciesInModule';
-import { isPackage } from './isPackage';
+import { resolveModules } from './resolveModules';
 
 /**
  * Fetch all modules.
  */
 export async function fetchModules(opts: MainOptions): Promise<Module[]> {
-  const { logger, entries } = opts;
+  const { logger } = opts;
 
   const fetched: MapModule = new Map();
-  const paths = Array.from(entries.values());
+  const queued = resolveModules(opts, opts.entries);
+  logger?.log(queued);
 
-  for (const filePath of paths) {
-    logger?.info('-- Processing ', filePath);
+  for (const [, mod] of queued) {
+    // Handle special package.json
+    if (mod.type === 'package') {
+      const [json, entries] = await findEntriesFromPackage(opts, mod.filePath);
 
-    // Handle package notation
-    if (isPackage(filePath)) {
-      const maybe = await findEntriesFromPackage(
-        path.join(opts.pathNodeModules, filePath),
-      );
-      if (maybe.size <= 0) {
-        throw new Error(`Can not find any entries for package "${filePath}"`);
-      }
-      paths.push(...Array.from(maybe.values()));
+      entries.forEach((entry) => {
+        queued.set(entry.filePath, entry);
+      });
+
+      fetched.set(mod.filePath, {
+        ...mod,
+        dependencies: [],
+        pathInsidePkg: mod.filePath,
+        pathMonaco: mod.filePath.replace(opts.rootDir, ''),
+        pkg: json.name, // TODO
+        text: JSON.stringify(json),
+      });
       continue;
-    } else if (!path.isAbsolute(filePath)) {
-      throw new Error(`Please pass an absolute filePath "${filePath}"`);
     }
 
-    const isInsideNodeModules = filePath.includes(opts.pathNodeModules);
-    const folderPath = path.dirname(filePath);
+    const isInsideNodeModules = mod.filePath.includes(opts.pathNodeModules);
+    const folderPath = path.dirname(mod.filePath);
 
-    const text = await fs.readFile(filePath, { encoding: 'utf-8' });
+    const text = await fs.readFile(mod.filePath, { encoding: 'utf-8' });
     const dependencies = await getDependenciesInModule(opts, text, folderPath);
 
     let pkg = '';
     if (isInsideNodeModules) {
-      const split = filePath.replace(opts.pathNodeModules, '').split('/');
+      const split = mod.filePath.replace(opts.pathNodeModules, '').split('/');
       pkg = split[0].startsWith('@') ? `${split[0]}/${split[1]}` : split[0];
     }
 
     const pathInsidePkg = pkg
-      ? filePath.replace(path.join(opts.pathNodeModules, pkg, '/'), '')
+      ? mod.filePath.replace(path.join(opts.pathNodeModules, pkg, '/'), '')
       : '';
-    fetched.set(filePath, {
-      filePath,
+    fetched.set(mod.filePath, {
+      filePath: mod.filePath,
       text,
-      dependencies,
+      dependencies: Array.from(dependencies.values()),
       pkg,
       pathInsidePkg,
-      pathMonaco: filePath.replace(opts.rootDir, ''),
+      pathMonaco: mod.filePath.replace(opts.rootDir, ''),
+      type: 'typescript',
     });
 
     // Finally add new files in the current loop to continue fetching
-    for (const dep of dependencies) {
-      if (entries.has(dep.filePath)) {
+    for (const [fp, dep] of dependencies) {
+      if (queued.has(fp)) {
         continue;
       }
 
-      if (fetched.has(dep.filePath)) {
-        continue;
-      }
-
-      paths.push(dep.filePath);
+      queued.set(fp, dep);
     }
   }
 
