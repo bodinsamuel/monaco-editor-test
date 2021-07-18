@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { MainOptions, MapModule, Module } from '../types';
 import { findEntriesFromPackage } from './findEntriesFromPackage';
-import { getDependenciesInModule } from './getDependenciesInModule';
+import { findImportInModule } from './findImportInModule';
 import { resolveModules } from './resolveModules';
 
 /**
@@ -37,7 +37,7 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
     const folderPath = path.dirname(mod.filePath);
 
     const text = await fs.readFile(mod.filePath, { encoding: 'utf-8' });
-    const dependencies = await getDependenciesInModule(opts, text, folderPath);
+    const dependencies = await findImportInModule(opts, text, folderPath);
 
     let pkg = '';
     if (isInsideNodeModules) {

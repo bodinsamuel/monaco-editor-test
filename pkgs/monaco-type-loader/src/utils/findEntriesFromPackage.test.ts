@@ -6,16 +6,21 @@ it("should find source-map.d.ts because it's specified as-is", async () => {
     {
       rootDir: '',
     },
-    path.join(__dirname, '../../../../node_modules/source-map/'),
+    path.join(__dirname, '../../../../node_modules/source-map/package.json'),
   );
-  expect(res).toStrictEqual(
+  expect(res).toStrictEqual([
+    expect.objectContaining({ name: 'source-map' }),
     new Set([
-      path.join(
-        __dirname,
-        '../../../../node_modules/source-map/source-map.d.ts',
-      ),
+      {
+        filePath: path.join(
+          __dirname,
+          '../../../../node_modules/source-map/source-map.d.ts',
+        ),
+
+        type: 'typescript',
+      },
     ]),
-  );
+  ]);
 });
 
 it("should find index.d.ts because it's not specified but fallback", async () => {
@@ -23,14 +28,21 @@ it("should find index.d.ts because it's not specified but fallback", async () =>
     {
       rootDir: '',
     },
-    path.join(__dirname, '../../../../node_modules/tempy/'),
+    path.join(__dirname, '../../../../node_modules/tempy/package.json'),
   );
 
-  expect(res).toStrictEqual(
+  expect(res).toStrictEqual([
+    expect.objectContaining({ name: 'tempy' }),
     new Set([
-      path.join(__dirname, '../../../../node_modules/tempy/index.d.ts'),
+      {
+        filePath: path.join(
+          __dirname,
+          '../../../../node_modules/tempy/index.d.ts',
+        ),
+        type: 'typescript',
+      },
     ]),
-  );
+  ]);
 });
 
 it("should find nothing because it's not specified and fallback is not possible", async () => {
@@ -43,7 +55,7 @@ it("should find nothing because it's not specified and fallback is not possible"
     path.join(__dirname, '../../../../node_modules/yargs/'),
   );
 
-  expect(res).toStrictEqual(new Set([]));
+  expect(res).toStrictEqual([{}, new Set([])]);
 });
 
 it('should not break if package.json does not exists', async () => {
@@ -54,5 +66,5 @@ it('should not break if package.json does not exists', async () => {
     'foobar',
   );
 
-  expect(res).toStrictEqual(new Set([]));
+  expect(res).toStrictEqual([{}, new Set([])]);
 });

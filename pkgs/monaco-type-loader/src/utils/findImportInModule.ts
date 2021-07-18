@@ -6,6 +6,7 @@ import {
   TRIPLE_SLASHES_REGEXP,
 } from '../constants';
 import { MainOptions, ModuleLight } from '../types';
+import { isBuiltinModule } from './isBuiltInModule';
 import { isPackage } from './isPackage';
 import { resolveModules } from './resolveModules';
 
@@ -89,6 +90,11 @@ export async function normalizeImports(
     // Package
     const isNodePackage = isPackage(name);
     if (isNodePackage) {
+      if (isBuiltinModule(name)) {
+        opts.logger?.info('Skipping native package', name);
+        continue;
+      }
+
       found.add(name);
       continue;
     }
@@ -101,7 +107,7 @@ export async function normalizeImports(
   return found;
 }
 
-export async function getDependenciesInModule(
+export async function findImportInModule(
   opts: Pick<MainOptions, 'pathNodeModules' | 'rootDir'>,
   sourceCode: string,
   folderPath: string,

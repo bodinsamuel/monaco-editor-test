@@ -3,7 +3,7 @@ import {
   extractFromRegex,
   getTripleSlashes,
   normalizeImports,
-} from './getDependenciesInModule';
+} from './findImportInModule';
 
 const nm = path.join(__dirname, '../../../../node_modules/');
 
@@ -18,9 +18,9 @@ describe('getTripleSlashes', () => {
       '/node_modules/@types/eslint/',
     );
 
-    expect(res).toStrictEqual([
-      { filePath: '/node_modules/@types/eslint/helpers.d.ts' },
-    ]);
+    expect(res).toStrictEqual(
+      new Set(['/node_modules/@types/eslint/helpers.d.ts']),
+    );
   });
 
   it('should find lib', () => {
@@ -33,9 +33,38 @@ describe('getTripleSlashes', () => {
       '/node_modules/@types/eslint/',
     );
 
-    expect(res).toStrictEqual([
-      { filePath: '/node_modules/typescript/lib/lib.es2019.array.d.ts' },
-    ]);
+    expect(res).toStrictEqual(
+      new Set(['/node_modules/typescript/lib/lib.es2019.array.d.ts']),
+    );
+  });
+
+  it('should find types', () => {
+    const res = getTripleSlashes(
+      {
+        pathNodeModules: '/node_modules/',
+      },
+      `/// <reference types="@types/cheerio" />
+    foobar`,
+      '/node_modules/@types/eslint/',
+    );
+
+    expect(res).toStrictEqual(new Set(['/node_modules/@types/cheerio']));
+  });
+
+  // does not work yet
+  it.skip('should handle combined', () => {
+    const res = getTripleSlashes(
+      {
+        pathNodeModules: '/node_modules/',
+      },
+      `/// <reference types="node" lib="esnext" />
+    foobar`,
+      '/node_modules/@types/eslint/',
+    );
+
+    expect(res).toStrictEqual(
+      new Set(['/node_modules/typescript/lib/lib.esnext.d.ts']),
+    );
   });
 });
 
@@ -84,13 +113,8 @@ describe('normalizeImports', () => {
       path.join(nm, '@types/eslint/'),
     );
 
-    expect(res).toStrictEqual([
-      {
-        filePath: path.join(nm, 'cheerio/lib/index.d.ts'),
-      },
-      {
-        filePath: path.join(nm, '@types/eslint/helpers.d.ts'),
-      },
-    ]);
+    expect(res).toStrictEqual(
+      new Set(['cheerio', path.join(nm, '@types/eslint/helpers.d.ts')]),
+    );
   });
 });

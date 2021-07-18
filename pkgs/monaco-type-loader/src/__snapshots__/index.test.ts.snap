@@ -22,6 +22,83 @@ export const entries: Entry[] = [
 "
 `;
 
+exports[`should do something 1`] = `
+"/* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
+// This is a generated file, do not edit.
+// Built with @h1fra/monaco-type-loader; ts version v0.0.0
+
+import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+
+interface Entry {
+  path: string;
+  source: any;
+  pkg: string | false;
+}
+
+// prettier-ignore
+export const entries: Entry[] = [
+  { pkg: \\"readdirp\\", path: \\"/node_modules/readdirp/package.json\\", source: require(\\"!!raw-loader!/node_modules/readdirp/package.json\\") },
+{ pkg: \\"readdirp\\", path: \\"/node_modules/readdirp/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/readdirp/index.d.ts\\").default },
+];
+"
+`;
+
+exports[`should handle scoped package 1`] = `
+"/* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
+// This is a generated file, do not edit.
+// Built with @h1fra/monaco-type-loader; ts version v0.0.0
+
+import * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+
+interface Entry {
+  path: string;
+  source: any;
+  pkg: string | false;
+}
+
+// prettier-ignore
+export const entries: Entry[] = [
+  { pkg: \\"@jest/console\\", path: \\"/node_modules/@jest/console/package.json\\", source: require(\\"!!raw-loader!/node_modules/@jest/console/package.json\\") },
+{ pkg: \\"@jest/console\\", path: \\"/node_modules/@jest/console/build/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/console/build/index.d.ts\\").default },
+{ pkg: \\"@jest/console\\", path: \\"/node_modules/@jest/console/build/BufferedConsole.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/console/build/BufferedConsole.d.ts\\").default },
+{ pkg: \\"@jest/console\\", path: \\"/node_modules/@jest/console/build/CustomConsole.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/console/build/CustomConsole.d.ts\\").default },
+{ pkg: \\"@jest/console\\", path: \\"/node_modules/@jest/console/build/NullConsole.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/console/build/NullConsole.d.ts\\").default },
+{ pkg: \\"@jest/console\\", path: \\"/node_modules/@jest/console/build/getConsoleOutput.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/console/build/getConsoleOutput.d.ts\\").default },
+{ pkg: \\"@jest/console\\", path: \\"/node_modules/@jest/console/build/types.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/console/build/types.d.ts\\").default },
+{ pkg: \\"@jest/types\\", path: \\"/node_modules/@jest/types/package.json\\", source: require(\\"!!raw-loader!/node_modules/@jest/types/package.json\\") },
+{ pkg: \\"jest-message-util\\", path: \\"/node_modules/jest-message-util/package.json\\", source: require(\\"!!raw-loader!/node_modules/jest-message-util/package.json\\") },
+{ pkg: \\"@jest/types\\", path: \\"/node_modules/@jest/types/build/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/types/build/index.d.ts\\").default },
+{ pkg: \\"jest-message-util\\", path: \\"/node_modules/jest-message-util/build/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/jest-message-util/build/index.d.ts\\").default },
+{ pkg: \\"@jest/types\\", path: \\"/node_modules/@jest/types/build/Circus.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/types/build/Circus.d.ts\\").default },
+{ pkg: \\"@jest/types\\", path: \\"/node_modules/@jest/types/build/Config.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/types/build/Config.d.ts\\").default },
+{ pkg: \\"@jest/types\\", path: \\"/node_modules/@jest/types/build/Global.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/types/build/Global.d.ts\\").default },
+{ pkg: \\"@jest/types\\", path: \\"/node_modules/@jest/types/build/TestResult.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/types/build/TestResult.d.ts\\").default },
+{ pkg: \\"@jest/types\\", path: \\"/node_modules/@jest/types/build/Transform.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@jest/types/build/Transform.d.ts\\").default },
+{ pkg: \\"jest-message-util\\", path: \\"/node_modules/jest-message-util/build/types.d.ts\\", source: require(\\"!!raw-loader!/node_modules/jest-message-util/build/types.d.ts\\").default },
+{ pkg: \\"chalk\\", path: \\"/node_modules/chalk/package.json\\", source: require(\\"!!raw-loader!/node_modules/chalk/package.json\\") },
+{ pkg: \\"istanbul-reports\\", path: \\"/node_modules/istanbul-reports/package.json\\", source: require(\\"!!raw-loader!/node_modules/istanbul-reports/package.json\\") },
+{ pkg: \\"yargs\\", path: \\"/node_modules/yargs/package.json\\", source: require(\\"!!raw-loader!/node_modules/yargs/package.json\\") },
+{ pkg: \\"istanbul-lib-coverage\\", path: \\"/node_modules/istanbul-lib-coverage/package.json\\", source: require(\\"!!raw-loader!/node_modules/istanbul-lib-coverage/package.json\\") },
+{ pkg: \\"stack-utils\\", path: \\"/node_modules/stack-utils/package.json\\", source: require(\\"!!raw-loader!/node_modules/stack-utils/package.json\\") },
+{ pkg: \\"chalk\\", path: \\"/node_modules/chalk/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/chalk/index.d.ts\\").default },
+{ pkg: \\"@types/istanbul-reports\\", path: \\"/node_modules/@types/istanbul-reports/package.json\\", source: require(\\"!!raw-loader!/node_modules/@types/istanbul-reports/package.json\\") },
+{ pkg: \\"@types/yargs\\", path: \\"/node_modules/@types/yargs/package.json\\", source: require(\\"!!raw-loader!/node_modules/@types/yargs/package.json\\") },
+{ pkg: \\"@types/istanbul-lib-coverage\\", path: \\"/node_modules/@types/istanbul-lib-coverage/package.json\\", source: require(\\"!!raw-loader!/node_modules/@types/istanbul-lib-coverage/package.json\\") },
+{ pkg: \\"@types/stack-utils\\", path: \\"/node_modules/@types/stack-utils/package.json\\", source: require(\\"!!raw-loader!/node_modules/@types/stack-utils/package.json\\") },
+{ pkg: \\"@types/istanbul-reports\\", path: \\"/node_modules/@types/istanbul-reports/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@types/istanbul-reports/index.d.ts\\").default },
+{ pkg: \\"@types/yargs\\", path: \\"/node_modules/@types/yargs/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@types/yargs/index.d.ts\\").default },
+{ pkg: \\"@types/istanbul-lib-coverage\\", path: \\"/node_modules/@types/istanbul-lib-coverage/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@types/istanbul-lib-coverage/index.d.ts\\").default },
+{ pkg: \\"@types/stack-utils\\", path: \\"/node_modules/@types/stack-utils/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@types/stack-utils/index.d.ts\\").default },
+{ pkg: \\"istanbul-lib-report\\", path: \\"/node_modules/istanbul-lib-report/package.json\\", source: require(\\"!!raw-loader!/node_modules/istanbul-lib-report/package.json\\") },
+{ pkg: \\"yargs-parser\\", path: \\"/node_modules/yargs-parser/package.json\\", source: require(\\"!!raw-loader!/node_modules/yargs-parser/package.json\\") },
+{ pkg: \\"@types/istanbul-lib-report\\", path: \\"/node_modules/@types/istanbul-lib-report/package.json\\", source: require(\\"!!raw-loader!/node_modules/@types/istanbul-lib-report/package.json\\") },
+{ pkg: \\"@types/yargs-parser\\", path: \\"/node_modules/@types/yargs-parser/package.json\\", source: require(\\"!!raw-loader!/node_modules/@types/yargs-parser/package.json\\") },
+{ pkg: \\"@types/istanbul-lib-report\\", path: \\"/node_modules/@types/istanbul-lib-report/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@types/istanbul-lib-report/index.d.ts\\").default },
+{ pkg: \\"@types/yargs-parser\\", path: \\"/node_modules/@types/yargs-parser/index.d.ts\\", source: require(\\"!!raw-loader!/node_modules/@types/yargs-parser/index.d.ts\\").default },
+];
+"
+`;
+
 exports[`should load and generate file 1`] = `
 "/* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
 // This is a generated file, do not edit.
