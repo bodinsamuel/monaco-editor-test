@@ -7,6 +7,22 @@ import { generateImportFile } from './utils/generateImportFile';
 import { shouldBeDir } from './utils/shouldBeDir';
 import { shouldBeFile } from './utils/shouldBeFile';
 
+function debug({ logger, rootDir }: MainOptions, modules: Module[]) {
+  logger?.debug('');
+  logger?.debug('Found', modules.length, 'modules');
+  logger?.debug(
+    modules
+      .map(({ filePath, dependencies, pkg }) => {
+        return `- [${pkg}] ${filePath.replace(rootDir, '')}
+  => deps: [${dependencies
+    .map(({ filePath: _fp }) => _fp.replace(rootDir, ''))
+    .join(', ')}]`;
+      })
+      .join('\r\n'),
+  );
+  logger?.debug('');
+}
+
 export class MonacoAutomaticFileLoader {
   #opts: MainOptions;
 
@@ -35,17 +51,7 @@ export class MonacoAutomaticFileLoader {
     const modules = await fetchModules(this.#opts);
     this.#modules.push(...modules);
 
-    logger?.debug('');
-    logger?.debug('Found', modules.length, 'modules');
-    logger?.debug(
-      modules
-        .map(({ filePath, dependencies, pkg }) => {
-          return `- [${pkg}] ${filePath}
-    => deps: [${dependencies.map(({ filePath: _fp }) => _fp).join(', ')}]`;
-        })
-        .join('\r\n'),
-    );
-    logger?.debug('');
+    debug(this.#opts, modules);
   }
 
   async generateFile(): Promise<string> {

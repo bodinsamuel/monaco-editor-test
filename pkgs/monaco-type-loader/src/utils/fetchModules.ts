@@ -10,11 +10,8 @@ import { resolveModules } from './resolveModules';
  * Fetch all modules.
  */
 export async function fetchModules(opts: MainOptions): Promise<Module[]> {
-  const { logger } = opts;
-
   const fetched: MapModule = new Map();
   const queued = resolveModules(opts, opts.entries);
-  logger?.log(queued);
 
   for (const [, mod] of queued) {
     // Handle special package.json
