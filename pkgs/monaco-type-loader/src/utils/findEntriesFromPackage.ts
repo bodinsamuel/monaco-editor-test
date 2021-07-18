@@ -15,6 +15,7 @@ export async function findEntriesFromPackage(
     console.warn('Error while parsing a package.json', pkgJson);
     return found;
   }
+  found.add(pkgJson);
 
   let paths = json.typing || json.typings || json.types || ['index.d.ts'];
   if (!Array.isArray(paths)) {

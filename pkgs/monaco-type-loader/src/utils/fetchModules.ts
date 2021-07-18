@@ -10,11 +10,15 @@ import { isPackage } from './isPackage';
  * Fetch all modules.
  */
 export async function fetchModules(opts: MainOptions): Promise<Module[]> {
-  const toFetch = new Set<string>(opts.entries);
-  const fetched: MapModule = new Map();
+  const { logger, entries } = opts;
 
-  const entries = toFetch.entries();
-  for (let [, filePath] of entries) {
+  const fetched: MapModule = new Map();
+  const paths = Array.from(entries.values());
+
+  for (const filePath of paths) {
+    logger?.info('-- Processing ', filePath);
+
+    // Handle package notation
     if (isPackage(filePath)) {
       const maybe = await findEntriesFromPackage(
         path.join(opts.pathNodeModules, filePath),
@@ -22,7 +26,8 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
       if (maybe.size <= 0) {
         throw new Error(`Can not find any entries for package "${filePath}"`);
       }
-      [filePath] = Array.from(maybe.values());
+      paths.push(...Array.from(maybe.values()));
+      continue;
     } else if (!path.isAbsolute(filePath)) {
       throw new Error(`Please pass an absolute filePath "${filePath}"`);
     }
@@ -30,7 +35,6 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
     const isInsideNodeModules = filePath.includes(opts.pathNodeModules);
     const folderPath = path.dirname(filePath);
 
-    opts.logger?.debug('-- Processing ', filePath);
     const text = await fs.readFile(filePath, { encoding: 'utf-8' });
     const dependencies = await getDependenciesInModule(opts, text, folderPath);
 
@@ -39,6 +43,7 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
       const split = filePath.replace(opts.pathNodeModules, '').split('/');
       pkg = split[0].startsWith('@') ? `${split[0]}/${split[1]}` : split[0];
     }
+
     const pathInsidePkg = pkg
       ? filePath.replace(path.join(opts.pathNodeModules, pkg, '/'), '')
       : '';
@@ -51,18 +56,17 @@ export async function fetchModules(opts: MainOptions): Promise<Module[]> {
       pathMonaco: filePath.replace(opts.rootDir, ''),
     });
 
+    // Finally add new files in the current loop to continue fetching
     for (const dep of dependencies) {
-      if (toFetch.has(dep.filePath)) {
-        // console.log('already found', fp);
+      if (entries.has(dep.filePath)) {
         continue;
       }
 
       if (fetched.has(dep.filePath)) {
-        // console.log('already fetched', fp);
         continue;
       }
 
-      toFetch.add(dep.filePath);
+      paths.push(dep.filePath);
     }
   }
 

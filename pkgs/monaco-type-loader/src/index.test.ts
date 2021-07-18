@@ -1,17 +1,32 @@
 import path from 'path';
-import { load } from '.';
+import { MonacoAutomaticFileLoader } from '.';
 
-it('should load', async () => {
-  const res = await load({
+it('should load and generate file', async () => {
+  const loader = new MonacoAutomaticFileLoader({
     rootDir: path.join(__dirname, '..', '..', '..'),
-    entries: [
+    entries: new Set([
       'cheerio',
       '@types/prettier',
       path.join(__dirname, '/testData/testData.d.ts'),
-    ],
+    ]),
+    pathNodeModules: path.join(__dirname, '../../../node_modules/'),
+    pathToWrite: 'gen.ts',
+    // logger: null,
+  });
+  await loader.load();
+
+  expect(await loader.generateFile()).toMatchSnapshot();
+});
+
+it('should load nothing', async () => {
+  const loader = new MonacoAutomaticFileLoader({
+    rootDir: path.join(__dirname, '..', '..', '..'),
+    entries: new Set(),
     pathNodeModules: path.join(__dirname, '../../../node_modules/'),
     pathToWrite: 'gen.ts',
     logger: null,
   });
-  expect(res).toMatchSnapshot();
+  await loader.load();
+
+  expect(loader.modules).toStrictEqual([]);
 });

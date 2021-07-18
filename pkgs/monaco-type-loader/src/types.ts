@@ -1,9 +1,9 @@
 export interface ModuleLight {
+  type: 'package' | 'typescript';
   filePath: string;
 }
 
-export interface Module {
-  filePath: string;
+export interface Module extends ModuleLight {
   text: string;
   dependencies: ModuleLight[];
   pkg: string;
@@ -23,8 +23,8 @@ interface Logger {
 
 export interface MainOptions {
   rootDir: string;
-  entries: string[];
-  pathToWrite: string;
+  entries: Set<string>;
+  pathToWrite?: string;
   pathNodeModules: string;
   logger?: Logger | null;
 }

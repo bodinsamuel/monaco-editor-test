@@ -51,6 +51,7 @@ export function getTripleSlashes(
     if (match[1] === 'path') {
       const filePath = path.join(folderPath, match[2]);
       modules.set(filePath, {
+        type: 'typescript',
         filePath,
       });
     } else if (match[1] === 'lib') {
@@ -62,6 +63,14 @@ export function getTripleSlashes(
       );
 
       modules.set(filePath, {
+        type: 'typescript',
+        filePath,
+      });
+    } else if (match[1] === 'types') {
+      const filePath = path.join(opts.pathNodeModules, match[2]);
+
+      modules.set(filePath, {
+        type: 'package',
         filePath,
       });
     }
@@ -95,7 +104,7 @@ export async function processModules(
       const maybe = await findEntriesFromPackage(
         path.join(opts.pathNodeModules, name),
       );
-      maybe.forEach((fp) => found.add({ filePath: fp }));
+      maybe.forEach((fp) => found.add({ type: 'package', filePath: fp }));
       continue;
     }
 
@@ -115,6 +124,7 @@ export async function processModules(
     }
 
     found.add({
+      type: 'typescript',
       // folderPath: path.dirname(absolutePathForModule),
       // name: path.basename(absolutePathForModule),
       filePath: absolutePathForModule,

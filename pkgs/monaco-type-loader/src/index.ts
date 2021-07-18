@@ -1,59 +1,73 @@
 import fs from 'fs/promises';
 import prettier from 'prettier';
 
-import { MainOptions } from './types';
+import { MainOptions, Module } from './types';
 import { fetchModules } from './utils/fetchModules';
-import { generateTypeFile } from './utils/generateTypeFile';
+import { generateImportFile } from './utils/generateImportFile';
+import { shouldBeDir } from './utils/shouldBeDir';
+import { shouldBeFile } from './utils/shouldBeFile';
 
-export async function load(opts: MainOptions): Promise<string> {
-  // eslint-disable-next-line no-param-reassign
-  opts.logger = opts.logger === undefined ? console : opts.logger;
-  const { logger } = opts;
-  logger?.log('Type Loader');
+export class MonacoAutomaticFileLoader {
+  #opts: MainOptions;
 
-  try {
-    const stat = await fs.stat(opts.pathNodeModules);
-    if (!stat.isDirectory()) {
-      logger?.error(
-        '"pathNodeModules" is not a directory',
-        opts.pathNodeModules,
-      );
-      return '';
-    }
-  } catch (e) {
-    logger?.error('Can not read "pathNodeModules"', opts.pathNodeModules);
-    return '';
+  #modules: Module[] = [];
+
+  constructor(opts: MainOptions) {
+    this.#opts = {
+      ...opts,
+      logger: opts.logger === undefined ? console : opts.logger,
+    };
   }
 
-  logger?.log('fetching...');
+  get modules() {
+    return Object.freeze(this.#modules);
+  }
 
-  const modules = await fetchModules(opts);
+  async load(): Promise<void> {
+    const { logger, pathNodeModules, rootDir } = this.#opts;
+    logger?.debug('Monaco Automatic File Loader starting...');
 
-  logger?.log('');
-  logger?.log('Found', modules.length, 'types');
-  logger?.log(
-    modules
-      .map(({ filePath, dependencies, pkg }) => {
-        return `- [${pkg}] ${filePath}
+    await shouldBeDir(pathNodeModules, 'pathNodeModules');
+    await shouldBeDir(rootDir, 'rootDir');
+
+    logger?.debug('Fetching...');
+
+    const modules = await fetchModules(this.#opts);
+    this.#modules.push(...modules);
+
+    logger?.debug('');
+    logger?.debug('Found', modules.length, 'types');
+    logger?.debug(
+      modules
+        .map(({ filePath, dependencies, pkg }) => {
+          return `- [${pkg}] ${filePath}
     => deps: [${dependencies.map(({ filePath: _fp }) => _fp).join(', ')}]`;
-      })
-      .join('\r\n'),
-  );
-  logger?.log('');
+        })
+        .join('\r\n'),
+    );
+    logger?.debug('');
+  }
 
-  const toWrite = generateTypeFile(opts, { modules, tsVersion: '0.0.0' });
+  async generateFile(): Promise<string> {
+    const toWrite = generateImportFile(this.#opts, {
+      modules: this.#modules,
+      tsVersion: '0.0.0',
+    });
 
-  // format
-  const prettierOptions = await prettier.resolveConfig(__dirname);
-  const formatted = prettier.format(toWrite, {
-    ...prettierOptions,
-    filepath: 'esLibs.ts',
-  });
+    // format
+    const prettierOptions = await prettier.resolveConfig(__dirname);
+    const formatted = prettier.format(toWrite, {
+      ...prettierOptions,
+      filepath: 'esLibs.ts',
+    });
 
-  return formatted;
-}
+    return formatted;
+  }
 
-export async function loadAndWrite(opts: MainOptions): Promise<void> {
-  const formatted = await load(opts);
-  await fs.writeFile(opts.pathToWrite, formatted);
+  async loadAndWrite(): Promise<void> {
+    await shouldBeFile(this.#opts.pathToWrite!, 'pathToWrite');
+    await this.load();
+
+    await fs.writeFile(this.#opts.pathToWrite!, await this.generateFile());
+  }
 }

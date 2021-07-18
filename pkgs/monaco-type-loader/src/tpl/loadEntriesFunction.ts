@@ -1,6 +1,4 @@
-// start
-const MonacoEditor: any = {};
-// end
+import type * as MonacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
 export interface Entry {
   path: string;
@@ -10,14 +8,19 @@ export interface Entry {
 
 export type Loaded = Omit<Entry, 'source'> & {
   type: 'package' | 'module';
-  uri: typeof MonacoEditor.Uri;
-  disposable?: typeof MonacoEditor.IDisposable;
+  uri: MonacoEditor.Uri;
+  disposable?: MonacoEditor.IDisposable;
 };
 
 export function loadEntriesFunction(
   monaco: typeof MonacoEditor,
   entries: Entry[],
-  getOrCreateModel: (monaco: any, uri: any, src: string, lang: string) => void,
+  getOrCreateModel: (
+    monaco: typeof MonacoEditor,
+    uri: MonacoEditor.Uri,
+    src: string,
+    lang: string,
+  ) => void,
 ): Loaded[] {
   const loaded: Loaded[] = [];
 

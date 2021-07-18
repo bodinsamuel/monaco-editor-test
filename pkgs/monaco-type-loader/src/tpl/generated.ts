@@ -1,11 +1,9 @@
 export function generatedTPL({
   tsVersion,
   entries,
-  loadEntriesFunction,
 }: {
   tsVersion: string;
   entries: string[];
-  loadEntriesFunction: string;
 }): string {
   return `
 /* eslint-disable @typescript-eslint/no-var-requires, import/order, global-require */
@@ -20,7 +18,5 @@ interface Entry { path: string; source: any; pkg: string | false };
 export const entries: Entry[] = [
   ${entries.join('\r\n')}
 ];
-
-${loadEntriesFunction.toString()}
 `;
 }
