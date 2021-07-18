@@ -1,7 +1,7 @@
 {
-  "name": "@h1fra/monaco-type-loader",
+  "name": "@h1fra/monaco-editor-type-loader",
   "version": "0.0.1",
-  "description": "Load type definition into monaco-editor",
+  "description": "Load type definitions into monaco-editor",
   "main": "src/index.ts",
   "license": "MIT",
   "devDependencies": {
